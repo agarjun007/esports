@@ -1,0 +1,117 @@
+{%extends 'base.html' %} {%block title%} Home {%endblock%} {% block head %}
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+  crossorigin="anonymous"
+/>
+
+<link
+  rel="icon"
+  href="https://cdn3.iconfinder.com/data/icons/ui-ux-essentials-solid/24/unlocked-solid-512.png"
+  type="image/icon type"
+/>
+
+{% endblock %} {% block content%}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Hi, welcome</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#"
+          >Home <span class="sr-only">(current)</span></a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
+          >contact Us</a
+        >
+      </li>
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Items
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a
+            class="dropdown-item"
+            href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
+            >Vegetarian</a
+          >
+          <a
+            class="dropdown-item"
+            href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
+            >Non-Vegetarian</a
+          >
+          <div class="dropdown-divider"></div>
+          <a
+            class="dropdown-item"
+            href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
+            >Deserts</a
+          >
+        </div>
+      </li>
+    </ul>
+      
+        <a href="/logout/" style="text-decoration: none; color: white">
+          <button class="btn btn-danger my-2 my-sm-0">Log Out</button></a>
+  </div>
+</nav>
+
+<div id="card-container">
+  <div class="row container-fluid">
+    {%for x in objects%}
+    <div class="col-md-4 col-sm-6 col-12 mb-5">
+      <div class="card" style="width: 18rem mr-5;">
+        <img class="card-img-top" src="{{x.img}}" alt="Card image cap" style="height: 200px;"/>
+        <div class="card-body">
+          <h5 class="card-title">{{x.item}}</h5>
+          <p class="card-text ">{{x.desc}}</p>
+          <h6> price: {{x.price}}₹</h6><br>
+          <a href="#" class="btn btn-success">Buy Now</a>
+        </div>
+      </div>
+    </div>
+    {%endfor%}
+  </div>
+</div>
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+  crossorigin="anonymous"
+></script>
+
+
+{% endblock%}

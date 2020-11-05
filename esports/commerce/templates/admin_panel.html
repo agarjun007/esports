@@ -1,0 +1,89 @@
+{% extends 'base_admin.html'%} 
+
+{%block title%} Admin panel {%endblock%}
+
+
+{% block head %}
+
+{% endblock %} 
+
+{% block card%}
+<div style="padding-left: 3rem;" class="card-deck">
+    <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+      <div class="card-header">Users</div>
+      <div class="card-body">
+        <h5 class="card-title">Total Registered users</h5>
+        <p class="card-text text-white"><b>5</b></p>
+      </div>
+    </div>
+    <div class="card text-white bg-success mb-3" style="max-width: 20rem;">
+      <div class="card-header">Products</div>
+      <div class="card-body">
+        <h5 class="card-title">Total Products</h5>
+        <p class="card-text text-white"><b>10</b></p>
+      </div>
+    </div>
+    <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+      <div class="card-header">Orders</div>
+      <div class="card-body">
+        <h5 class="card-title">Total Orders</h5>
+        <p class="card-text text-white"><b>4</b></p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block content%}
+<div class="container-xl">
+  <div class="table-responsive">
+      <div class="table-wrapper">
+          <div class="table-title">
+              <div class="row">
+                  <div class="col-sm-8"><h2>Customer <b>Details</b></h2></div>
+                  <div class="col-sm-4">
+                      <div class="search-box">
+                          <i class="material-icons">&#xE8B6;</i>
+                          <input type="text" class="form-control" placeholder="Search&hellip;">
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <table class="table table-striped table-hover table-bordered">
+              <thead>
+                  <tr>
+                      <th>No</th>
+                      <th>Name </th>
+                      <th>Email </th>
+                      <th>Username</th>
+                      <th>Address</th>
+                      <th>City </th>
+                      <th>State</th>
+                      <th>Pin Code</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              {% for x in table_data %}
+              <tbody>
+                  <tr>
+                      <td>1</td>
+                      <td>Thomas Hardy</td>
+                      <td>89 Chiaroscuro Rd.</td>
+                      <td>Portland</td>
+                      <td>97219</td>
+                      <td>USA</td>
+                      <td>
+                          <a href="#" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                          <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                          <a href="#" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                      </td>
+                  </tr>
+                     {% endfor %}  
+              </tbody>
+          </table>
+          <div> <button type="button" class="btn btn-success btn-lg">Create User</button>
+              
+          </div>
+      </div>
+  </div>  
+</div>   
+
+{% endblock %} 
