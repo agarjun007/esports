@@ -1,6 +1,6 @@
 {% extends 'base_admin.html'%} 
 
-{%block title%} Create Product {%endblock%}
+{%block title%} Edit Product {%endblock%}
 
 
 {% block head %}
@@ -97,30 +97,30 @@ body {
             <!--image--> <img src="https://www.olympicsports.co.in/images/2-Sports-Products.jpg" width="100%" height="100%"> </div>
         <!--right-column-->
         <div class="col-md-8 col-12 xcol">
-            <h2 class="title pt-5 pb-3">Add Products</h2>
-            <form method="POST" class="myform" enctype="multipart/form-data">
+            <h2 class="title pt-5 pb-3">Edit Products</h2>
+            <form method="POST" action="/update_products/{{product_data.id}}"class="myform">
                 {% csrf_token %}
                 <div class="row rone">
                     <div class="form-group col-md-6 fone py-3"> <label>Category</label>
                         <select name="category"class="form-control">
-                          <option >-- Choose category --</option>
+                            <option value="{{product_data.category}}">{{product_data.category}}</option>
                           <option value="Cricket">Cricket</option>
                           <option value="Football">Football</option>
                           <option value="Tennis">Tennis </option>
                           <option value="Badminton">Badminton</option> 
                         </select> </div>
-                    <div class="form-group col-md-6 ftwo py-3"> <input type="text" name="productname" class="form-control" placeholder="Product name"> </div>
+                    <div class="form-group col-md-6 ftwo py-3"> <input type="text" name="productname" class="form-control" placeholder="Product name" value="{{product_data.productname}}"> </div>
                 </div>
                 <div class="row rtwo">
-                    <div class="form-group col-md-6 fthree py-3"> <textarea class="form-control jk" name="productdesc" placeholder="Product Description" id="" cols="10" rows="5"></textarea> </div>
-                    <div class="form-group col-md-6 ffour py-3"> <input type="number" name="price" class="form-control lm" placeholder="Price"> </div>
+                    <div class="form-group col-md-6 fthree py-3"> <textarea class="form-control jk" name="productdesc" placeholder="Product Description" id="" cols="10" rows="5">{{product_data.productdesc}}</textarea> </div>
+                    <div class="form-group col-md-6 ffour py-3"> <input type="number" name="price" class="form-control lm" placeholder="Price" value="{{product_data.price}}"> </div>
                 </div>
                 <div class="row rthree">
-                    <div class="form-group col-md-6 ffive py-3"> <input type="number" name="quantity" class="form-control" placeholder="Quantity"> </div>
-                    <div class="form-group col-md-6 fsix py-3"> <label>Product Image</label><input type="file" name="productimage"> </div>
+                    <div class="form-group col-md-6 ffive py-3"> <input type="number" name="quantity" class="form-control" placeholder="Quantity" value="{{product_data.Quantity}}"> </div>
+                    <div class="form-group col-md-6 fsix py-3"> <label>Product Image</label><input type="file" name="productimage" value="{{product_data.productimage}}"> </div>
                 </div>
                 <div class="row rfour">
-                    <div class="form-group col-md-6 fseven py-3"> <button type="submit" class="btn btn-primary"><span>Add Product</span></button> </div>
+                    <div class="form-group col-md-6 fseven py-3"> <button type="submit" class="btn btn-primary"><span>Update Product</span></button> </div>
                     <div class="form-group col-md-6 feight py-3">
                         
                     </div>

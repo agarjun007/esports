@@ -18,68 +18,53 @@
   <h1 style="font-weight: bolder;">Join Us</h1> 
   <div class="main-agileinfo w3layouts-agileits"> 
     <div id="wrapper">
-      <form  method="post">
+      <form  id="signupform">
         {% csrf_token %}
         <div id="login" class="animate w3layouts agileits form"> 
           <div class="agileinfo-row">
             <div class="ferry ferry-from">
               <label>Your Name</label>
-              <input type="text" name="name" required=" ">
+              <input id="name" type="text" name="name" required=" ">
             </div>
             <div class="ferry ferry-from">
               <label> Email</label>
-              <input type="text" name="email"  required=" ">
+              <input id="email" type="text" name="email"  required=" ">
             </div>
-            <div class="ferry ferry-from">
-              <label>State</label>
-              <select name="state">
-                <option value="Kerala">Kerala</option>
-                <option value="Tamilnadu">Tamilnadu</option>
-                <option value="Karnataka">Karnataka </option>
-                <option value="Andra pradesh">Andra pradesh</option> 
-              </select>
+            <div class="ferry ferry-from" >
+              <label>Confirm password</label>
+              <input id="password2" type="password" name="confirmpassword"  required="">
             </div>
-            <div class="ferry ferry-to">
-              <label>City/District</label>
-              <select name="city">
-                <option value="Trivandrum">Trivandrum</option>
-                <option value="kollam">kollam</option>
-                <option value="kozhikode">kozhikode</option>
-                <option value="Ernakulam">Ernakulam</option> 
-              </select>
+            <div style="padding-top: 40px;" class="ferry ferry-from" >
+            <span id="invalid" style="color: red;font-weight: bold;"> </span>  
             </div>
-            <div class="book-pag agileits w3layouts"> 
-              <div class="book-pag-frm1 agileits w3layouts">
-                <label>pincode</label><input name="pincode" type="text"  maxlength="6">
-              </div>
-              <div class="clear"></div>
-            </div> 
+           
+            
           </div>
           <div class="agileinfo-row w3ls-row2"> 
             <div class="tickets">
               <div class="persons">
                 <label>Username</label>
-                <input type="text" name="username" required="">
+                <input id="username" type="text" name="username" required="">
               </div>
               <div class="persons">
                 <label>Password</label>
-                <input type="password" name="password"  required="">
+                <input id="password1" type="password" name="password"  required="">
               </div>
-              <div class="persons" style="    padding-top: 25px;">
-                <label>Confirm password</label>
-                <input type="password" name="confirmpassword"  required="">
-              </div>
+              
               <div class="clear"></div>
             </div>
             <div class="ferry ferry-from" style="padding-top: 25px;">
-              <label>Address</label>
-              <textarea id="textarea" name="address" title="Please enter Your Address"></textarea>
+              <label>Mobile Number</label>
+              <input id="mobile" type="text" name="mobile" required="">
             </div>
+            
             <div class="wthreesubmitaits"style="padding-top: 25px;">
-              <input type="submit" name="submit" value="Submit">
+              <input id="button" type="button" name="submit" value="Submit">
             </div>
+            
             <div>
-              <p style="color: white;">Already have account? <a href="">Signin</a></p>
+              
+              <p style="color: white;">Already have account? <a href="/signin/">Signin</a></p>
             </div>
           </div>
           <div class="clear"> </div>
@@ -89,6 +74,100 @@
   </div> 
    
 </div>	
-<!-- //main -->
+<script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://code.jquery.com/jquery-3.5.0.min.js"
+    integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+    crossorigin="anonymous"
+  ></script>
+  
+
+<script type="text/javascript">
+  $( document ).ready(function() {
+    $( "#button" ).click(function() {
+      var userData = {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        name: $('#name').val(),
+        username: $('#username').val(),
+        email: $('#email').val(),
+        password1: $('#password1').val(),
+        password2: $('#password2').val(),
+        mobile: $('#mobile').val()
+      }
+      if (userData.name === '')
+     {
+      $('#invalid').html('please enter your name')
+     }
+     else if (userData.email === '')
+     {
+      $('#invalid').html('please enter Email')
+     }
+      else if (userData.username === '')
+     {
+      $('#invalid').html('please enter username')
+     }
+          
+     else if (userData.password1 === '')
+     {
+      $('#invalid').html('please enter password')
+     }
+     else if (userData.password2 === '')
+     {
+      $('#invalid').html('please confirm password')
+     }
+     else if (userData.mobile === '')
+     {
+      $('#invalid').html('please enter mobile number')
+     }
+else{
+      $.ajax({
+          url : '/signup/',
+          type: "POST",
+          data : userData,
+          dataType : "json",
+          success: function( data ){
+            if(data == 'valid')
+              window.location.replace("/signin")
+            if(data == 'invalid'){
+              $('#invalid').html('Passwords not Match')
+              $('#password1').val('')
+              $('#password2').val('')
+            }
+            if (data == 'usernamemismatch'){
+              $('#invalid').html('Username already taken')
+              $('#username').val('')
+              $('#password1').val('')
+              $('#password2').val('')
+            }
+
+          }
+      });
+
+     }
+     
+      
+    });
+    {% for message in messages %}
+    
+    var $messageDiv = $('#greendisp'); // get the reference of the div
+    $messageDiv.show().html('{{message}}'); // show and set the message
+    setTimeout(function(){ $messageDiv.hide().html('');}, 5000);
+    {% endfor %}
+  });
+</script>
 </body>
 </html>
