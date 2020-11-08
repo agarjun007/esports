@@ -86,10 +86,11 @@ def updateproducts(request,id):
             product.Quantity = quantity
             # product.productimage = productimage
             if 'productimage' not in request.POST:
-                productimage = request.FILES['productimage']
+                print('notinpost')
+                productimage = request.FILES.get('productimage')
             else:
+                print('inpost')
                 productimage = product.productimage
-
             product.productimage = productimage
             product.save()
         
@@ -226,4 +227,15 @@ def usersignin(request):
    
 
 def home(request):
-    return render(request,'home.html')             
+    product = products.objects.all()
+    
+    if request.user.is_authenticated:
+        return render(request,'home.html',{'product_data':product})
+    else:
+        return redirect(usersignin)      
+
+def userlogout(request):
+     if request.user.is_authenticated:
+        auth.logout(request)
+        messages.info(request, "Logged out Successfully")
+        return redirect(usersignin)             

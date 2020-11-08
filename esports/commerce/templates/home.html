@@ -1,97 +1,195 @@
-{%extends 'base.html' %} {%block title%} Home {%endblock%} {% block head %}
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-  integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-  crossorigin="anonymous"
-/>
+<!DOCTYPE html>
 
-<link
-  rel="icon"
-  href="https://cdn3.iconfinder.com/data/icons/ui-ux-essentials-solid/24/unlocked-solid-512.png"
-  type="image/icon type"
-/>
+{% load static %}
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home  </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
 
-{% endblock %} {% block content%}
+<link rel="stylesheet" type="text/css" href=" {% static 'style.css' %} " />
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Hi, welcome</a>
-  <button
-    class="navbar-toggler"
-    type="button"
-    data-toggle="collapse"
-    data-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent"
-    aria-expanded="false"
-    aria-label="Toggle navigation"
-  >
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<link rel="icon" href="https://cdn3.iconfinder.com/data/icons/ui-ux-essentials-solid/24/unlocked-solid-512.png" type="image/icon type"/>
+  </head>
+<body>
+<style>
+.top{
+    position: fixed;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    
+    flex: auto;
+    margin-top: -30px;
+    width: 100%;
+    height: 70px;
+    background-color: black;
+    color: #f0f0f0;
+    z-index: 10;
+    
+    flex-direction: row;
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#"
-          >Home <span class="sr-only">(current)</span></a
-        >
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
-          >contact Us</a
-        >
-      </li>
-      <li class="nav-item dropdown">
-        <a
-          class="nav-link dropdown-toggle"
-          href="#"
-          id="navbarDropdown"
-          role="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          Items
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a
-            class="dropdown-item"
-            href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
-            >Vegetarian</a
-          >
-          <a
-            class="dropdown-item"
-            href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
-            >Non-Vegetarian</a
-          >
-          <div class="dropdown-divider"></div>
-          <a
-            class="dropdown-item"
-            href="https://cdn4.vectorstock.com/i/1000x1000/92/13/website-under-construction-landing-page-vector-20519213.jpg"
-            >Deserts</a
-          >
-        </div>
-      </li>
-    </ul>
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;  
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+ .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  font-size: medium;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.search-form .form-group {
+  float: right !important;
+  transition: all 0.35s, border-radius 0s;
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+}
+.search-form .form-group input.form-control {
+  padding-right: 20px;
+  border: 0 none;
+  background: transparent;
+  box-shadow: none;
+  display:block;
+}
+.search-form .form-group input.form-control::-webkit-input-placeholder {
+  display: none;
+}
+.search-form .form-group input.form-control:-moz-placeholder {
+  /* Firefox 18- */
+  display: none;
+}
+.search-form .form-group input.form-control::-moz-placeholder {
+  /* Firefox 19+ */
+  display: none;
+}
+.search-form .form-group input.form-control:-ms-input-placeholder {
+  display: none;
+}
+.search-form .form-group:hover,
+.search-form .form-group.hover {
+  width: 100%;
+  border-radius: 4px 25px 25px 4px;
+}
+.search-form .form-group span.form-control-feedback {
+  position: absolute;
+  top: -1px;
+  right: -2px;
+  z-index: 2;
+  display: block;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  text-align: center;
+  color: #3596e0;
+  left: initial;
+  font-size: 14px;
+}
+</style>
+
+<div class="top">
+  <div style="margin-left: 30px;" class="logo"> <img  style="height: 70px; width: 70px;" src="{% static 'logo.png' %}"></div>
+  <div style="    padding-left: 40px;" class="home "> <h4 style="padding-top: 20px;">Home</h4>  </div>
+  <div class="dropdown">
+    <button class="dropbtn"style="    padding-left: 40px;"><h4 style="padding-top: 7px;">Categories<i style="padding-left: 5px;;" class="fa fa-caret-down"></i></h4>
       
-        <a href="/logout/" style="text-decoration: none; color: white">
-          <button class="btn btn-danger my-2 my-sm-0">Log Out</button></a>
-  </div>
-</nav>
+    </button>
+    <div class="dropdown-content">
+      <a href="#">Cricket</a>
+      <a href="#">Badminton</a>
+      <a href="#">Football</a>
+    </div>
+  </div> 
+  <div style="padding-left: 40px;" class="login "> <h4 style="padding-top: 20px;">Login</h4></div>
+  
+    
+        <div class="col-md-4 col-md-offset-3">
+            <form action="" style="padding-top: 24px;" class="search-form">
+                <div class="form-group has-feedback">
+            		<label for="search" class="sr-only">Search</label>
+            		<input type="text" class="form-control" name="search" id="search" placeholder="search">
+              		<span class="glyphicon glyphicon-search form-control-feedback"></span>
+            	</div>
+            </form>
+        </div>
+  
+        <!-- <div style="padding-left: 40px;" class="login "> <h4 style="padding-top: 20px;">Login</h4></div> -->
+        <div class="dropdown">
+          <button class="dropbtn"style="padding-left: 40px;"><i style="padding-top: 19px; padding-left: 5px;" class="fas fa-user-circle"></i></h4>
+            
+          </button>
+          <div class="dropdown-content">
+            <a href="#">Dashboard</a>
+            <a href="/user_logout/">logout</a>
+            
+          </div>
+        </div>
+        </div>
+
+</div>
 
 <div id="card-container">
   <div class="row container-fluid">
-    {%for x in objects%}
-    <div class="col-md-4 col-sm-6 col-12 mb-5">
-      <div class="card" style="width: 18rem mr-5;">
-        <img class="card-img-top" src="{{x.img}}" alt="Card image cap" style="height: 200px;"/>
-        <div class="card-body">
-          <h5 class="card-title">{{x.item}}</h5>
-          <p class="card-text ">{{x.desc}}</p>
-          <h6> price: {{x.price}}₹</h6><br>
-          <a href="#" class="btn btn-success">Buy Now</a>
-        </div>
+    {%for x in product_data%}
+    <div class="card " style="width: 18rem mr-5; float: left;margin-top: 40px;margin-left: 15px;">
+      <img class="card-img-top" src="{{x.ImageURL}}" alt="Card image cap" style="height: 200px;">
+      <div class="card-body">
+        <h5 class="card-title">{{x.productname}}</h5>
+        <p class="card-text">{{x.productdesc}}</p>
+	<h6> price: {{x.price}}₹</h6><br>
+        <a href="#" class="btn btn-primary">Add to cart</a>
+        <a href="#" class="btn btn-success">View</a>
       </div>
     </div>
     {%endfor%}
@@ -114,4 +212,6 @@
 ></script>
 
 
-{% endblock%}
+</body>
+
+</html>
