@@ -8,6 +8,7 @@ class products(models.Model):
     productdesc = models.TextField(max_length=5000)
     price = models.IntegerField()
     Quantity = models.IntegerField()
+    unit = models.CharField(max_length=20,null=True)
     productimage = models.ImageField(null=True, blank=True)
 
     @property

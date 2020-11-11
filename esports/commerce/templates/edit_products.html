@@ -116,12 +116,19 @@ body {
                     <div class="form-group col-md-6 ffour py-3"> <input type="number" name="price" class="form-control lm" placeholder="Price" value="{{product_data.price}}"> </div>
                 </div>
                 <div class="row rthree">
-                    <div class="form-group col-md-6 ffive py-3"> <input type="number" name="quantity" class="form-control" placeholder="Quantity" value="{{product_data.Quantity}}"> </div>
-                    <div class="form-group col-md-6 fsix py-3"> <label>Product Image</label><input type="file" name="productimage" > </div>
+                    <div class="form-group col-md-6 ffive py-3"> <input type="number" name="quantity" class="form-control" placeholder="Quantity" value="{{product_data.Quantity}}"> 
+                        <select name="unit"class="form-control" style="width: 10rem;">
+                            <option value="{{product_data.unit}}">{{product_data.unit}}</option>
+                            <option value="No.s">No.s</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Liters">Liters </option>
+                           </select> 
+                    </div>
+                    <div class="form-group col-md-6 fsix py-3"> <label>Product Image</label><input type="file" name="productimage"onchange="viewImage(event)" > </div>
                 </div>
-                <div class="row rfour">
+                <div class="row rfour" style="margin-top: -40px;">
                     <div class="form-group col-md-6 fseven py-3"> <button type="submit" class="btn btn-primary"><span>Update Product</span></button> </div>
-                    <div class="form-group col-md-6 feight py-3">
+                    <div class="form-group col-md-6 feight py-3"> <div class="form-group col-md-6 feight py-3"><img src="{{product_data.ImageURL}}" id="imageview" style="height: 100px;width: 100px;">
                         
                     </div>
                 </div>
@@ -129,5 +136,12 @@ body {
         </div>
     </div>
 </div>
+
+
+<script>
+function viewImage(event){
+    document.getElementById('imageview').src = URL.createObjectURL(event.target.files[0])
+}
+</script>
 
 {% endblock %} 

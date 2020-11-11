@@ -33,9 +33,19 @@ def adminlogin(request):
 def adminpanel(request):
     if request.session.has_key('password'):
         table = User.objects.all()
-        return render(request,'admin_panel.html',{'table_data':table})
+        product = products.objects.all()
+        length_user =len(table)
+        length_product =len(product)
+        return render(request,'admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product})
     else:
         return redirect(adminlogin)
+
+def adminpanel_user(request):
+    if request.session.has_key('password'):
+        table = User.objects.all()
+        return render(request,'adminpanel_user.html',{'table_data': table})
+    else:
+        return redirect(adminlogin)     
 
 def adminpanel_products(request):
     if request.session.has_key('password'):
@@ -46,20 +56,21 @@ def adminpanel_products(request):
 
 def createproducts(request):
     if request.session.has_key('password'):
-         if request.method == 'POST':
+        if request.method == 'POST':
         
             category = request.POST['category']
             productname = request.POST['productname']
             productdesc = request.POST['productdesc']
             price = request.POST['price']
             quantity = request.POST['quantity']
+            unit = request.POST['unit']
             productimage = request.FILES.get('productimage')
-            product = products.objects.create(category=category,productname=productname,productdesc=productdesc,price=price,Quantity= quantity,productimage=productimage)
+            product = products.objects.create(category=category,productname=productname,productdesc=productdesc,price=price,Quantity= quantity,productimage=productimage,unit=unit)
             product.save();
-            messages.info(request, "User created successfully..")
-            return render(request,'create_products.html')
-         else:
-              return render(request,'create_products.html')  
+            messages.info(request, "Product created successfully..")
+            return redirect(createproducts)
+        else:
+            return render(request,'create_products.html')  
     else:
         return redirect(adminlogin)    
 
@@ -77,6 +88,7 @@ def updateproducts(request,id):
             productdesc = request.POST['productdesc']
             price = request.POST['price']
             quantity = request.POST['quantity']
+            unit = request.POST['unit']
             # productimage = request.POST['productimage']
             product = products.objects.get(id=id)
             product.productname = productname
@@ -84,6 +96,7 @@ def updateproducts(request,id):
             product.productdesc = productdesc
             product.price = price
             product.Quantity = quantity
+            product.unit = unit
             # product.productimage = productimage
             if 'productimage' not in request.POST:
                 print('notinpost')
@@ -182,6 +195,8 @@ def adminlogout(request):
            
     
 def usersignup(request):
+    if request.user.is_authenticated:
+        return redirect(home)
     if request.method == 'POST':
         name = request.POST['name']
         username = request.POST['username']
@@ -239,3 +254,7 @@ def userlogout(request):
         auth.logout(request)
         messages.info(request, "Logged out Successfully")
         return redirect(usersignin)             
+
+def productview(request):
+    return render(request,'product_view.html')
+   

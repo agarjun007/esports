@@ -36,6 +36,7 @@
             </div>
             <div style="padding-top: 40px;" class="ferry ferry-from" >
             <span id="invalid" style="color: red;font-weight: bold;"> </span>  
+            <span id="greendisp" style="color:green; font-weight:bold"></span>
             </div>
            
             
@@ -161,12 +162,7 @@ else{
      
       
     });
-    {% for message in messages %}
     
-    var $messageDiv = $('#greendisp'); // get the reference of the div
-    $messageDiv.show().html('{{message}}'); // show and set the message
-    setTimeout(function(){ $messageDiv.hide().html('');}, 5000);
-    {% endfor %}
   });
 </script>
 </body>
