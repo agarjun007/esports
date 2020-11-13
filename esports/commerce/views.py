@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User,auth
 from django.contrib import messages
-from .models import products
+from .models import products,Category
 from django.http import JsonResponse
 from django.http import HttpResponse 
 
@@ -28,7 +28,7 @@ def adminlogin(request):
             return JsonResponse('invalid', safe=False)   
             # return redirect('/admin_login')
     else:    
-            return render(request,'admin_login.html')        
+            return render(request,'commerce/admin_login.html')        
 
 def adminpanel(request):
     if request.session.has_key('password'):
@@ -36,29 +36,78 @@ def adminpanel(request):
         product = products.objects.all()
         length_user =len(table)
         length_product =len(product)
-        return render(request,'admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product})
+        return render(request,'commerce/admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product})
     else:
         return redirect(adminlogin)
 
 def adminpanel_user(request):
     if request.session.has_key('password'):
         table = User.objects.all()
-        return render(request,'adminpanel_user.html',{'table_data': table})
+        return render(request,'commerce/adminpanel_user.html',{'table_data': table})
     else:
         return redirect(adminlogin)     
+
+def adminpanel_category(request):
+    if request.session.has_key('password'):
+        table = Category.objects.all()
+        return render(request,'commerce/adminpanel_category.html',{'table_data': table})
+    else:
+        return redirect(adminlogin)    
+
+def createcategory(request):
+    if request.session.has_key('password'):
+        if request.method == 'POST':
+        
+            categoryname = request.POST['categoryname']
+            category = Category.objects.create(categoryname=categoryname)
+            category.save();            
+            return redirect(adminpanel_category)
+        else:
+            return render(request,'commerce/create_category.html')  
+    else:
+        return redirect(adminlogin)    
+
+def editcategory(request,id):
+    if request.session.has_key('password'):
+        category = Category.objects.get(id=id) 
+        return render(request,'commerce/edit_category.html',{'category_data':category})    
+    else:
+        return redirect(adminlogin)
+def updatecategory(request,id):
+    if request.session.has_key('password'):
+        if request.method=="POST":
+            categoryname = request.POST['categoryname']           
+            category = Category.objects.get(id=id)
+            category.categoryname = categoryname
+            category.save()        
+            return redirect(adminpanel_category)
+        else:        
+            return render(request,'commerce/edit_category.html')
+    else:
+        return redirect(adminlogin)           
+                
+
+def deletecategory(request,id):
+    if request.session.has_key('password'):
+        category = Category.objects.get(id=id) 
+        category.delete()
+        return redirect(adminpanel_category) 
+    else:
+       return redirect(adminlogin)              
+
+
 
 def adminpanel_products(request):
     if request.session.has_key('password'):
         table = products.objects.all()
-        return render(request,'adminpanel_products.html',{'table_data': table})
+        return render(request,'commerce/adminpanel_products.html',{'table_data': table})
     else:
         return redirect(adminlogin)        
 
 def createproducts(request):
     if request.session.has_key('password'):
-        if request.method == 'POST':
-        
-            category = request.POST['category']
+        if request.method == 'POST':        
+            category = Category.objects.get(id=request.POST['category'])
             productname = request.POST['productname']
             productdesc = request.POST['productdesc']
             price = request.POST['price']
@@ -69,21 +118,23 @@ def createproducts(request):
             product.save();
             messages.info(request, "Product created successfully..")
             return redirect(createproducts)
-        else:
-            return render(request,'create_products.html')  
+        else:     
+            category = Category.objects.all()      
+            return render(request,'commerce/create_products.html',{'category_data':category})  
     else:
         return redirect(adminlogin)    
 
 def editproducts(request,id):
     if request.session.has_key('password'):
         product = products.objects.get(id=id) 
-        return render(request,'edit_products.html',{'product_data':product})    
+        category = Category.objects.all()
+        return render(request,'commerce/edit_products.html',{'category_data':category,'product_data':product})     
     else:
         return redirect(adminlogin)
 def updateproducts(request,id):
     if request.session.has_key('password'):
         if request.method=="POST":
-            category = request.POST['category']
+            category = Category.objects.get(id = request.POST['category'])
             productname = request.POST['productname']
             productdesc = request.POST['productdesc']
             price = request.POST['price']
@@ -92,7 +143,7 @@ def updateproducts(request,id):
             # productimage = request.POST['productimage']
             product = products.objects.get(id=id)
             product.productname = productname
-            product.category = category
+            product.category.categoryname = category.categoryname
             product.productdesc = productdesc
             product.price = price
             product.Quantity = quantity
@@ -110,7 +161,7 @@ def updateproducts(request,id):
             return redirect(adminpanel_products)
         else:
         
-            return render(request,'edit_products.html')
+            return render(request,'commerce/edit_products.html')
     else:
         return redirect(adminlogin)           
                 
@@ -149,12 +200,12 @@ def createuser(request):
                 # messages.info(request,"password not match")
                 return redirect('/create_user')
         else:
-            return render(request,'create_user.html')        
+            return render(request,'commerce/create_user.html')        
 
 def edituser(request,id):
     if request.session.has_key('password'):
         user = User.objects.get(id=id) 
-        return render(request,'edit_user.html',{'user_data':user})    
+        return render(request,'commerce/edit_user.html',{'user_data':user})    
     else:
         return redirect(adminlogin)
 def updateuser(request,id):
@@ -175,7 +226,7 @@ def updateuser(request,id):
             return redirect(adminpanel)
         else:
         
-            return render(request,'edit_user.html')
+            return render(request,'commerce/edit_user.html')
     else:
         return redirect(adminlogin)           
                 
@@ -193,68 +244,4 @@ def adminlogout(request):
         request.session.flush()
         return redirect(adminlogin)
            
-    
-def usersignup(request):
-    if request.user.is_authenticated:
-        return redirect(home)
-    if request.method == 'POST':
-        name = request.POST['name']
-        username = request.POST['username']
-        email = request.POST['email']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        mobile = request.POST['mobile']
-       
-        if password1 == password2:
-            if User.objects.filter(username=username).exists():
-                return JsonResponse('usernamemismatch',safe=False)
-                
-                # return redirect('/signin')
-            else: 
-                user = User.objects.create_user(first_name=name,username=username,email=email,password = password1,last_name = mobile)
-                user.save();
-            messages.info(request, "User created successfully..")  
-            # return redirect(usersignin)  
-            return JsonResponse('valid', safe=False)       
-        else:
-            return JsonResponse('invalid', safe=False)
-            messages.info(request,"password not match")
-            # return redirect('/signin')
-
-    else:    
-        return render(request,'signup.html')   
-
-def usersignin(request):
-    if request.user.is_authenticated:
-        return redirect(home)
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = auth.authenticate(username=username , password=password)
-
-        if user is not None:
-            auth.login(request,user)
-            return JsonResponse('valid', safe=False)
-        else:
-            return JsonResponse('invalid', safe=False)
-    else:
-        return render(request,'user_signin.html')
-   
-
-def home(request):
-    product = products.objects.all()
-    
-    if request.user.is_authenticated:
-        return render(request,'home.html',{'product_data':product})
-    else:
-        return redirect(usersignin)      
-
-def userlogout(request):
-     if request.user.is_authenticated:
-        auth.logout(request)
-        messages.info(request, "Logged out Successfully")
-        return redirect(usersignin)             
-
-def productview(request):
-    return render(request,'product_view.html')
-   
+ 

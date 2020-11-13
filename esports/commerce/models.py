@@ -2,8 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
+class Category(models.Model):
+    categoryname = models.CharField(max_length=50)
+
 class products(models.Model):
-    category = models.CharField(max_length=50)
+    category = models.ForeignKey(Category,on_delete=models.CASCADE)
     productname = models.CharField(max_length=20)
     productdesc = models.TextField(max_length=5000)
     price = models.IntegerField()
@@ -20,11 +23,3 @@ class products(models.Model):
         return url
         
 
-class userdetails(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE,null=True,blank=True)
-    name = models.CharField(max_length=50,null=True)
-    email = models.CharField(max_length=50,null=True)
-    state = models.CharField(max_length=50,null=True)
-    city = models.CharField(max_length=50,null=True)
-    address = models.TextField(max_length=5000,null=True)
-    pincode = models.IntegerField(null=True)
