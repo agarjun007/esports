@@ -48,14 +48,16 @@
             
           </button>
           <div class="dropdown-content">
-            <a href="#">Dashboard</a>
+            <a href="/user_order_history/">order History</a>
             <a href="/user_logout/">logout</a>
             
           </div>
           
         </div>
-        <div><i style=" padding-left: 5rem; padding-top: 35px; font-size: 15px; justify-content: space-between;" class="cart fas fa-shopping-cart"></i></div>
-        <span style="margin-top: 18px; margin-bottom: 35px;padding-top: 4px;" class="badge badge-danger">1</span>
+        <div><h4 style=" padding-top: 35px; font-size: 15px; justify-content: space-between;" > Hi,{{user.username}} </h4> </div>
+
+        <div><a href="/show_cart/"><i style=" padding-left: 5rem; padding-top: 35px; font-size: 15px; justify-content: space-between;" class="cart fas fa-shopping-cart"></i></a></div>
+        <span style="margin-top: 18px; margin-bottom: 35px;padding-top: 4px;" class="badge badge-danger">{{no}}</span>
 
 
         </div>
@@ -66,7 +68,7 @@
         {% block product %}{% endblock %}
 
 </div>
-
+{% block script %} {%endblock%}
 <script
   src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
   integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

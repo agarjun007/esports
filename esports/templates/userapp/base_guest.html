@@ -46,8 +46,10 @@
   
         <!-- <div style="padding-left: 40px;" class="login "> <h4 style="padding-top: 20px;">Login</h4></div> -->
         {% block account %}{% endblock %}
-        <div><i style="padding-left: 5rem; padding-top: 33px; font-size: 15px;" class="cart fas fa-shopping-cart"></i></div>
-        <span style="margin-top: 18px; margin-bottom: 35px;padding-top: 4px;" class="badge badge-danger">1</span>
+        <div><h4 style=" padding-top: 35px; font-size: 15px; justify-content: space-between;" > Hi,{{user.username}} </h4> </div>
+
+        <div><a href="/show_cart/"><i style="padding-left: 5rem; padding-top: 33px; font-size: 15px;" class="cart fas fa-shopping-cart"></i></a></div>
+        <span style="margin-top: 18px; margin-bottom: 35px;padding-top: 4px;" class="badge badge-danger">{{no}}</span>
 
 
         </div>

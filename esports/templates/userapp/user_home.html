@@ -14,7 +14,7 @@
     
   </button>
   <div class="dropdown-content">
-    <a href="#">Dashboard</a>
+    <a href="/user_order_history/">order History</a>
     <a href="/user_logout/">logout</a>
     
   </div>
@@ -32,7 +32,7 @@
         <h5 class="card-title">{{x.productname}}</h5>
         <p class="card-text">{{x.productdesc}}</p>
 	<h6> price: {{x.price}}₹</h6><br>
-        <a href="#" class="btn btn-primary">Add to cart</a>
+        <a href="/user_cart/{{x.id}}" class="btn btn-primary">Add to cart</a>
         <a href="/product_view/{{x.id}}" class="btn btn-success">View</a>
       </div>
     </div>

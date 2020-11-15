@@ -4,6 +4,7 @@ from django.contrib import messages
 from .models import products,Category
 from django.http import JsonResponse
 from django.http import HttpResponse 
+from userapp.models import *
 
 from django.core.files.storage import FileSystemStorage
 from PIL import Image
@@ -237,8 +238,14 @@ def deleteuser(request,id):
         user.delete()
         return redirect(adminpanel) 
     else:
-       return redirect(adminlogin)              
+       return redirect(adminlogin)    
 
+def adminpanel_orders(request):
+    if request.session.has_key('password'):
+        table = Order.objects.all()
+        return render(request,'commerce/adminpanel_orders.html',{'table_data': table})
+    else:
+        return redirect(adminlogin)    
 def adminlogout(request):
     if request.session.has_key('password'):
         request.session.flush()

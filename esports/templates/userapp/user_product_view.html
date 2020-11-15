@@ -49,7 +49,7 @@ body {
     </button>
     <div class="dropdown-content">
       {% for x in category_data%}
-      <a href="/category/{{x.categoryname}}">{{x.categoryname}}</a>
+      <a href="/category/{{x.id}}">{{x.categoryname}}</a>
       {% endfor %}
       
     </div>
@@ -71,14 +71,17 @@ body {
             
           </button>
           <div class="dropdown-content">
-            <a href="#">Dashboard</a>
+            <a href="/user_order_history/">order History</a>
             <a href="/user_logout/">logout</a>
             
           </div>
           
         </div>
-        <div><i style=" padding-left: 5rem; padding-top: 35px; font-size: 15px; justify-content: space-between;" class="cart fas fa-shopping-cart"></i></div>
-        
+        <div><h4 style=" padding-top: 35px; font-size: 15px; justify-content: space-between;" > Hi,{{user.username}} </h4> </div>
+
+        <div><a href="/show_cart/"><i style=" padding-left: 5rem; padding-top: 35px; font-size: 15px; justify-content: space-between;" class="cart fas fa-shopping-cart"></i></a></div>
+        <span style="margin-top: 18px; margin-bottom: 35px;padding-top: 4px;" class="badge badge-danger">{{no}}</span>
+
         </div>
 </div>
 
@@ -109,7 +112,7 @@ body {
 
             <p class="lead">
               <span class="mr-1">
-                <del>800₹</del>
+                <del>2000₹</del>
               </span>
               <span>{{product_data.price}}₹</span>
             </p>
@@ -120,7 +123,7 @@ body {
 
             <form class="d-flex justify-content-left">
               <!-- Default input -->
-              <input type="number" value="1" aria-label="Search" class="form-control" style="width: 100px">
+              <!-- <input type="number" value="1" aria-label="Search" class="form-control" style="width: 100px"> -->
               <a href="/user_cart/{{product_data.id}}"><button style="font-size: 15px;margin-left: 10px;" class="btn btn-primary btn-md my-0 p" type="button">Add to cart
                 <i class="fas fa-shopping-cart ml-1"></i>
               </button></a>
