@@ -3,6 +3,17 @@ from django.contrib.auth.models import User
 from commerce.models import *
 # Create your models here.
 
+class Userprofile(models.Model):
+    user = models.OneToOneField(User,on_delete=models.CASCADE) 
+    profilepic = models.ImageField(null=True, blank=True)
+
+    @property
+    def ImageURL(self):
+        try:
+            url = self.profilepic.url
+        except:
+            url = ''
+        return url
 
 class Address(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -30,7 +41,6 @@ class Cart(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null = True,blank =True)
     product = models.ForeignKey(products,on_delete=models.CASCADE,null = True,blank =True)
     quantity = models.IntegerField(null = True,blank =True)
-    totalprice = models.IntegerField(null = True,blank =True)
     
 
 

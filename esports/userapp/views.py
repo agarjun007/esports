@@ -6,7 +6,10 @@ from django.http import HttpResponse
 import datetime
 from commerce.models import *
 from .models import *
-
+from django.core.files.storage import FileSystemStorage
+from PIL import Image
+from django.core.files import File
+import esports
 
 # Create your views here.
 
@@ -69,6 +72,42 @@ def userhome(request):
     else:
         return redirect(usersignin)  
 
+def userprofile(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            print('post')
+            category = Category.objects.all()
+            user = request.user
+            cart = Cart.objects.filter(user= user)
+            item_count = cart.count()  
+            profilepic = request.FILES.get('profile-image-upload')
+            print(profilepic)
+            
+            userdetails = Userprofile.objects.get(user=user)
+
+            if 'profile-image-upload' not in request.POST:
+                print('notinpost')
+                profilepic = request.FILES.get('profile-image-upload')
+            else:
+                print('inpost')
+                profilepic = userdetails.profilepic
+
+            userdetails.profilepic = profilepic
+            userdetails.save()
+            return redirect(userhome)
+        else:        
+            category = Category.objects.all()
+            user = request.user
+            cart = Cart.objects.filter(user= user)
+            item_count = cart.count()  
+            userdetails =Userprofile.objects.filter(user=user)
+            for i in userdetails:
+                userdetail = i
+                break
+            return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count,'userdetails':userdetail})
+    else:
+        return redirect(usersignin)      
+
 def category(request,id):
     product= products.objects.filter(category=id)    
     category = Category.objects.all()
@@ -103,15 +142,16 @@ def showcart(request):
     if request.user.is_authenticated:
         user = request.user
         cart = Cart.objects.filter(user= user)
-        totalprice = 0
+        grandtotal = 0
         for item in cart:
-            totalprice = totalprice+item.totalprice
+            item.totalprice = item.quantity*item.product.price
+            grandtotal = grandtotal + item.totalprice
         category= Category.objects.all()
         item_count = cart.count()
         if item_count == 0:
             return render(request,'userapp/user_cart.html',{'category_data':category,'no':item_count}) 
         else:
-            return render(request,'userapp/user_cart.html',{'cart_data': cart,'category_data':category,'no':item_count,'totalprice':totalprice}) 
+            return render(request,'userapp/user_cart.html',{'cart_data': cart,'category_data':category,'no':item_count}) 
         
     else:
         return redirect(guesthome)
@@ -133,16 +173,37 @@ def usercart(request,id):
                     cart.quantity = cart.quantity+1
                     cart.totalprice = cart.product.price * cart.quantity
                     cart.save()   
-                    return redirect(showcart)
+                    return redirect(userhome)
                 else:
                     return redirect(guesthome)               
             else:   
                 quantity = 1 
                 
                 cart =  Cart.objects.create(user=user,product=product,quantity = quantity,totalprice=product.price * quantity)                   
-                return redirect(showcart) 
+                return redirect(userhome) 
     else:
-        return redirect(guesthome)             
+        return redirect(guesthome)      
+
+def cartedit(request):
+    id = request.POST["id"]
+    count =1
+    cart = Cart.objects.filter(id=id)
+    if request.POST["value"] == "add":       
+        for item in cart:
+            item.quantity = item.quantity + count
+            item.totalprice = item.product.price * item.quantity 
+            item.save()
+        print(item.quantity)
+        print(item.totalprice)
+    elif request.POST["value"]== "sub":
+        for item in cart:
+            item.quantity = item.quantity - count
+            item.totalprice = item.product.price * item.quantity 
+            item.save()
+        print(item.quantity)
+        print(item.totalprice)
+    return JsonResponse({'total':item.totalprice}, safe=False)
+
 
 def userorderhistory(request):
     if request.user.is_authenticated:
@@ -169,19 +230,27 @@ def userpayment(request):
             mode =  request.POST['mode']
             cart = Cart.objects.filter(user= user)
             for item in cart:
+                item.totalprice = item.quantity*item.product.price
+                grandtotal = grandtotal + item.totalprice
+            client = esports.Client(auth=("rzp_test_CNSSWriikia1CT", "n0mgUsfTKNsfszJ3U0aXlJX9"))
+            payment = client.order.create({'totalprice': grandtotal, 'currency': 'INR',
+                                       'payment_capture': '1'})
+            for item in cart:
                 order_details = Order.objects.create(user=user, address=address_details, product=item.product, quantity=item.quantity, totalprice=item.product.price*item.quantity,tdate=date,tid=trans_id,payment_mode=mode)
                 item.product.Quantity = item.product.Quantity - item.quantity
                 item.product.save()
             cart.delete()
+            messages.info(request,"Order placed Succesfully")
             return redirect(showcart)
         else:
             user = request.user
             cart = Cart.objects.filter(user= user)
-            totalprice = 0
-            for item in cart:
-                totalprice = totalprice+item.totalprice
             item_count = cart.count()
-            return render(request,'userapp/user_payment.html',{'cart_data': cart,'no':item_count,'totalprice':totalprice})     
+            grandtotal = 0
+            for item in cart:
+                item.totalprice = item.quantity*item.product.price
+                grandtotal = grandtotal + item.totalprice
+            return render(request,'userapp/user_payment.html',{'cart_data': cart,'no':item_count,'grandtotal':grandtotal})     
     else:
         return redirect(guesthome)
 def userlogout(request):

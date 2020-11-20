@@ -5,10 +5,12 @@ from .models import products,Category
 from django.http import JsonResponse
 from django.http import HttpResponse 
 from userapp.models import *
-
+import base64
+from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from PIL import Image
 from django.core.files import File
+
 
 # Create your views here.
 def adminlogin(request):
@@ -35,9 +37,11 @@ def adminpanel(request):
     if request.session.has_key('password'):
         table = User.objects.all()
         product = products.objects.all()
+        order = Order.objects.all()
+        length_order = len(order)
         length_user =len(table)
         length_product =len(product)
-        return render(request,'commerce/admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product})
+        return render(request,'commerce/admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product,'length_order':length_order})
     else:
         return redirect(adminlogin)
 
@@ -51,6 +55,12 @@ def adminpanel_user(request):
 def adminpanel_category(request):
     if request.session.has_key('password'):
         table = Category.objects.all()
+        for category in table:
+            totalitems =  products.objects.filter(category=category)
+            category.productcount = totalitems.count()
+            
+            # dict[category] = productcount
+       
         return render(request,'commerce/adminpanel_category.html',{'table_data': table})
     else:
         return redirect(adminlogin)    
@@ -114,8 +124,13 @@ def createproducts(request):
             price = request.POST['price']
             quantity = request.POST['quantity']
             unit = request.POST['unit']
-            productimage = request.FILES.get('productimage')
-            product = products.objects.create(category=category,productname=productname,productdesc=productdesc,price=price,Quantity= quantity,productimage=productimage,unit=unit)
+            # productimage = request.FILES.get('productimage')
+            image_data = request.POST['pro_img']
+            format, imgstr = image_data.split(';base64,')
+            ext = format.split('/')[-1]
+
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+            product = products.objects.create(category=category,productname=productname,productdesc=productdesc,price=price,Quantity= quantity,productimage=data,unit=unit)
             product.save();
             messages.info(request, "Product created successfully..")
             return redirect(createproducts)

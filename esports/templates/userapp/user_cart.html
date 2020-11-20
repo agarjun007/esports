@@ -15,7 +15,7 @@
   </button>
   <div class="dropdown-content">
     {% for x in category_data%}
-    <a href="/category/{{x.categoryname}}">{{x.categoryname}}</a>
+    <a href="/category/{{x.id}}">{{x.categoryname}}</a>
     {% endfor %}
     
   </div>
@@ -134,19 +134,19 @@
                       </div>
                     </div>
                   </th>
-                  <td class="border-0 align-middle"><strong>{{item.product.price}}</strong></td>
+                  <td class="border-0 align-middle"><strong id="price">{{item.product.price}}</strong></td>
                   <td class="pt-5">
-                    <!-- <div class="def-number-input number-input safari_only mb-0">
+                    <div class="def-number-input number-input safari_only mb-0">
                       <form method="POST">
                         {% csrf_token %}
-                      <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepDown();" class="minus">-</button>
-                      <input class="quantity" min="1" name="quantity" id="qty" value="{{item.quantity}}" type="number" style="width:13%" size="2"  autocomplete="off">
-                      <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp(); "  class="plus">+</button>
+                      <button type="button" id="minus{{item.id}}" onclick="this.parentNode.querySelector('input[type=number]').stepDown();minus('{{item.id}}')" class="minus">-</button>
+                      <input class="quantity" id="qty{{item.id}}" min="1" name="quantity" value="{{item.quantity}}" type="number" style="width:13%" size="2"  autocomplete="off">
+                      <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp();plus('{{item.id}}') "  class="plus">+</button>
                     </form>
-                    </div> -->
-                    <strong>{{item.quantity}}</strong>
+                    </div>
+                    <!-- <strong>{{item.quantity}}</strong> -->
                   </td>
-                  <td class="border-0 align-middle"><strong>{{item.totalprice}}</strong></td>
+                  <td class="border-0 align-middle"><strong id="output{{item.id}}">{{item.totalprice}}</strong></td>
                   <td class="border-0 align-middle"><a href="/delete_item/{{item.id}}"><button style="border-style: none;" class="text-dark"><i class="fa fa-trash"></i></button></a></td>
                 </tr>
                 {% endfor %}
@@ -164,11 +164,11 @@
           <div class="p-4">
            <p class="font-italic mb-4">Shipping and additional costs are calculated based on values you have entered.</p> 
             <ul class="list-unstyled mb-4">
-              <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Order Subtotal </strong><strong>₹. <span class="totalPrice">{{totalprice}}</span></strong></li>
+              <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Order Subtotal </strong><strong>₹. <span class="totalPrice">{{grandtotal}}</span></strong></li>
               <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Shipping and handling</strong><strong>₹.00</strong></li>
               <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Tax</strong><strong>₹. 00</strong></li>
               <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Total</strong>
-                <h5 class="font-weight-bold">₹. <span class="totalPrice">{{totalprice}}</span></h5>
+                <h5 class="font-weight-bold">₹. <span class="totalPrice">{{grandtotal}}</span></h5>
               </li>
             </ul><a href="/user_payment/" class="btn btn-dark rounded-pill py-2 btn-block">Procceed to checkout</a>
           </div>
@@ -183,6 +183,73 @@
 
 {% block script %}
 <script>
+  $(document).ready(function(){
+    {% for message in messages %}
+  alert('{{message}}')
+  {% endfor %}
+  });
+ 
+
+  function plus(plusid){
+    
+    data={
+      "id":plusid,
+      "value": "add",
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+    }
+
+    $.ajax({
+          url : '/cart_edit/',
+          type: "POST",
+          data : data,
+          dataType : "json",
+          success: function( data ){  
+            let  total = parseInt(data.total) 
+            console.log(total)
+            $('#output'+plusid).html(total)
+
+          }
+      });
+  }
+
+  function minus(minusid){
+    let quantity =  parseInt($('#qty'+minusid).val());
+    console.log(quantity)
+    if (quantity <= 1)
+    {
+      $('#minus'+ minusid).prop('disabled', true);
+    }
+    else{
+      $('#minus'+ minusid).prop('disabled', false);
+    }
+
+    data={
+      "id":minusid,
+      "value": "sub",
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+    }
+
+    $.ajax({
+          url : '/cart_edit/',
+          type: "POST",
+          data : data,
+          dataType : "json",
+          success: function( data ){
+            let  total = parseInt(data.total) 
+            console.log(total)
+            $('#output'+minusid).html(total)
+            if (quantity <= 1)
+    {
+      $('#minus'+ minusid).prop('disabled', true);
+    }
+    else{
+      $('#minus'+ minusid).prop('disabled', false);
+    }
+
+
+          }
+      });
+  }
 
 </script>
 {%endblock%}

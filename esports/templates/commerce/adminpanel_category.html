@@ -24,6 +24,7 @@
                     <tr>
                         <th>No</th>
                         <th>Categories </th>
+                        <th>Number of Products </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -33,7 +34,8 @@
                     <tr>
                         
                         <td>{{forloop.counter}}</td>
-                        <td>{{x.categoryname}}</td>                
+                        <td>{{x.categoryname}}</td>   
+                        <td>{{x.productcount}}</td>              
                         
                         <td>
                            <a href="/edit_category/{{x.id}}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>

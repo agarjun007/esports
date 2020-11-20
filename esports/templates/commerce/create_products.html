@@ -5,8 +5,7 @@
 
 {% block head %}
 <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
-<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.3/cropper.css"/>
 {% endblock %} 
 
 {% block css%}
@@ -124,11 +123,12 @@ body {
                             <option value="Liters">Liters </option>
                            </select>            
                          </div>     
-                           <div class="form-group col-md-6 fsix py-3"> <label>Product Image</label><input type="file" name="productimage" onchange="viewImage(event)" required> </div>
+                           <div class="form-group col-md-6 fsix py-3"> <label>Product Image</label><input id="fileInput" type="file" name="productimage"  required> </div>
+                        <textarea name="pro_img" id="pro_img" style="display: none;"></textarea>
                         </div>
                 <div class="row rfour" style="margin-top: -40px;">
                     <div class="form-group col-md-6 fseven py-3"> <button type="submit" class="btn btn-primary btn-lg"><span>Add Product</span></button> </div>
-                    <div class="form-group col-md-6 feight py-3"><img src="" id="imageview" style="height: 100px;width: 100px;">
+                    <div class="form-group col-md-6 feight py-3 imageview"><img src="" id="imageview" style="height: 100px;width: 100px;">
                         
                     </div>
                 </div>
@@ -136,8 +136,34 @@ body {
         </div>
     </div>
 </div>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="box-2">
+                    <div class="result"></div>
+                  </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnCrop" class="btn save btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
 
 <script type="text/javascript">
+ 
     $( document ).ready(function() {
      
       {% for message in messages %}
@@ -148,9 +174,46 @@ body {
       {% endfor %}
     });
 
-    function viewImage(event){
-        document.getElementById('imageview').src = URL.createObjectURL(event.target.files[0])
-    }
+    let result = document.querySelector('.result'),
+      save = document.querySelector('.save'),
+      cropped = document.querySelector('.imageview'),
+      upload = document.querySelector('#fileInput'),
+      cropper = '';
+
+    upload.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        // start file reader
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target.result) {
+            // create new image
+            $("#exampleModalCenter").modal("show");
+            let img = document.createElement('img');
+            img.id = 'image';
+            img.src = e.target.result
+            // clean result before
+            result.innerHTML = '';
+            // append new image
+            result.appendChild(img);
+            // init cropper
+            cropper = new Cropper(img);
+          }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
+    save.addEventListener('click', (e) => {
+      e.preventDefault();
+      // get result to data uri
+      let imgSrc = cropper.getCroppedCanvas({
+        width: 300 // img disp value
+      }).toDataURL();
+      $("#exampleModalCenter").modal("hide");
+      imageview.src = imgSrc;
+      $('#pro_img').val(imgSrc)
+    });
+    
   </script>
   
 {% endblock %} 
