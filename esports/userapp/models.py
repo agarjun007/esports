@@ -32,8 +32,9 @@ class Order(models.Model):
     quantity = models.IntegerField(null = True,blank =True)
     totalprice = models.IntegerField(null = True,blank =True)
     tid = models.CharField(max_length=200,null = True,blank =True)
-    tdate = models.DateTimeField(null = True,blank =True) 
-    payment_status = models.BooleanField(default=False)
+    tdate = models.DateField(null = True,blank =True) 
+    payment_status = models.CharField(max_length=50,null = True,blank =True)
+    order_status = models.CharField(max_length=50,null = True,blank =True)
     payment_mode = models.CharField(max_length=50,null = True,blank =True)
    
 

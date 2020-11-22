@@ -260,7 +260,43 @@ def adminpanel_orders(request):
         table = Order.objects.all()
         return render(request,'commerce/adminpanel_orders.html',{'table_data': table})
     else:
-        return redirect(adminlogin)    
+        return redirect(adminlogin) 
+
+def cancel_order(request,tid):
+    if request.session.has_key('password'):
+        order = Order.objects.filter(tid=tid)
+        for items in order:
+            items.order_status = 'Cancelled'
+            items.save()  
+        return redirect(adminpanel_orders)
+    else:
+        return redirect(adminlogin)
+
+def confirm_order(request,tid):
+    if request.session.has_key('password'):
+        order = Order.objects.filter(tid=tid)
+        for items in order:
+            items.order_status = 'Confirmed'
+            items.save()
+        table = Order.objects.all()         
+        return render(request,'commerce/adminpanel_orders.html',{'table_data': table})
+    else:
+        return redirect(adminlogin)   
+
+def adminpanel_reports(request):
+    if request.session.has_key('password'):
+        if request.method == 'POST':
+            report_mode = 1
+            date = request.POST['report']
+            table = Order.objects.filter(tdate = date)
+            print(date)
+            return render(request,'commerce/adminpanel_reports.html',{'table_data': table,'report_mode':report_mode})
+
+        else:
+            return render(request,'commerce/adminpanel_reports.html')
+    else:
+        return redirect(adminlogin)
+        
 def adminlogout(request):
     if request.session.has_key('password'):
         request.session.flush()

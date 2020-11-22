@@ -1,17 +1,24 @@
 {% extends 'commerce/base_admin.html'%} 
 
-{%block title%} Orders {%endblock%}
+{%block title%} Reports {%endblock%}
 {%block head%} {%endblock%}
 
 
 {% block content%}
+<form method="POST" action="">
+    {% csrf_token %}
+    <label for="report">Select a Date:</label>
+    <input type="date" id="report" name="report" required>
+    <button class="btn-success" type="submit">Show Report</button>
+  </form>
+  {% if report_mode == 1 %}
 <div class="container-xl">
   <div class="table-responsive">
    
       <div class="table-wrapper">
           <div class="table-title">
               <div class="row">
-                  <div class="col-sm-8"><h2>Order <b>Details</b></h2></div>
+                  <div class="col-sm-8"><h2>Sales <b>Report</b></h2></div>
                   
               </div>
           </div>
@@ -24,9 +31,8 @@
                       <th>Address</th>
                       <th>Ordered date</th>
                       <th>Payment mode</th>
-                      <th>payment status</th>
+                      <th>Order Price</th>
                       <th>Order status</th>
-                      <th>Actions</th>
                       
                   </tr>
               </thead>
@@ -39,12 +45,9 @@
                       <td>{{x.address.address }} {{x.address.city}} {{x.address.state}} {{x.address.pincode}}</td>
                       <td>{{x.tdate}}</td>
                       <td>{{x.payment_mode}}</td>
-                      <td>{{x.payment_status}}</td>
+                      <td>{{x.totalprice}}</td>
                       <td>{{x.order_status}}</td>
-                      <td>
-                          <a href="/confirm_order/{{x.tid}}" class="confirm" title="confirm" data-toggle="tooltip"><i style="color: green;" class="fas fa-check-circle"></i></a>
-                          <a href="/cancel_order/{{x.tid}}" class="cancel" title="Cancel" data-toggle="tooltip"><i style="color: red;" class="fas fa-window-close"></i></a>
-                        </td>
+                      
                   </tr>
                      {% endfor %}  
               </tbody>
@@ -53,8 +56,7 @@
       </div>
   </div>  
 </div>  
-
-  
+{% endif %}
 
 {% endblock %} 
 
