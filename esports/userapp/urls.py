@@ -21,6 +21,7 @@ urlpatterns = [
     path('edit_address/', views.editaddress,name='editaddress'),
     path('user_order_history/', views.userorderhistory,name='userorderhistory'),
     path('user_payment/<int:id>', views.userpayment,name='userpayment'),
+    path('paypal_payment/', views.payplpayment,name='paypalpayment'),
     path('user_logout/', views.userlogout,name='userlogout'),
 
 ]

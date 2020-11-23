@@ -41,7 +41,12 @@ def adminpanel(request):
         length_order = len(order)
         length_user =len(table)
         length_product =len(product)
-        return render(request,'commerce/admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product,'length_order':length_order})
+        labels = []
+        data = []
+        data=[length_product,length_user,length_order]
+        # print(label)
+        print(data)    
+        return render(request,'commerce/admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product,'length_order':length_order,'data': data})
     else:
         return redirect(adminlogin)
 
@@ -257,8 +262,16 @@ def deleteuser(request,id):
 
 def adminpanel_orders(request):
     if request.session.has_key('password'):
-        table = Order.objects.all()
-        return render(request,'commerce/adminpanel_orders.html',{'table_data': table})
+        orders = Order.objects.all()
+        grandtotal = 0
+        dict = {}
+        for order in orders:
+            if not order.tid in dict.keys():
+                dict[order.tid]=order
+                dict[order.tid].orderprice = order.totalprice
+            else:
+                dict[order.tid].orderprice += order.totalprice
+        return render(request,'commerce/adminpanel_orders.html',{'table_data': dict})
     else:
         return redirect(adminlogin) 
 
@@ -278,8 +291,7 @@ def confirm_order(request,tid):
         for items in order:
             items.order_status = 'Confirmed'
             items.save()
-        table = Order.objects.all()         
-        return render(request,'commerce/adminpanel_orders.html',{'table_data': table})
+        return redirect(adminpanel_orders)  
     else:
         return redirect(adminlogin)   
 

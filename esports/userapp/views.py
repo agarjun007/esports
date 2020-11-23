@@ -9,7 +9,7 @@ from .models import *
 from django.core.files.storage import FileSystemStorage
 from PIL import Image
 from django.core.files import File
-import esports
+import razorpay
 
 # Create your views here.
 
@@ -188,30 +188,23 @@ def cartedit(request):
     id = request.POST["id"]
     count =1
     grandtotal =0
-    cart = Cart.objects.filter(id=id)
+    carts = Cart.objects.filter(user=request.user)
+    item = Cart.objects.get(id=id)
     if request.POST["value"] == "add":       
-        for item in cart:
-            item.quantity = item.quantity + count
-            item.totalprice = item.product.price * item.quantity 
-            grandtotal = grandtotal + item.totalprice
-            item.grandtotal =grandtotal
-            item.save()
-        print(item.quantity)
-        print(item.totalprice)
-        print(item.grandtotal)
+        item.quantity = item.quantity + count
+        item.save()
+        price = item.product.price * item.quantity 
+
+        for x in carts:
+            grandtotal = grandtotal + x.product.price * x.quantity
     elif request.POST["value"]== "sub":
-        for item in cart:
-            item.quantity = item.quantity - count
-            item.totalprice = item.product.price * item.quantity 
-            item.save()
-            grandtotal = grandtotal + item.totalprice 
-        # for item in cart:
-              
-        print(item.totalprice) 
-        print(item.quantity)
-        
-        print(grandtotal)
-    return JsonResponse({'total':item.totalprice,'grandtotal':grandtotal}, safe=False)
+        item.quantity = item.quantity - count
+        item.save()
+        price = item.product.price * item.quantity 
+
+        for x in carts:
+            grandtotal = grandtotal + x.product.price * x.quantity
+    return JsonResponse({'total':price,'grandtotal':grandtotal}, safe=False)
 
 def showaddress(request): 
     if request.user.is_authenticated:
@@ -261,21 +254,38 @@ def userpayment(request,id):
             date = datetime.datetime.now()
             trans_id = datetime.datetime.now().timestamp()
             mode =  request.POST['mode']
+            print(mode)
             cart = Cart.objects.filter(user= user)
             status= 'pending'
             for item in cart:
                 item.totalprice = item.quantity*item.product.price
                 grandtotal = grandtotal + item.totalprice
-            # client = esports.Client(auth=("rzp_test_CNSSWriikia1CT", "n0mgUsfTKNsfszJ3U0aXlJX9"))
-            # payment = client.order.create({'totalprice': grandtotal, 'currency': 'INR',
-            #                            'payment_capture': '1'})
+            
             for item in cart:
                 order_details = Order.objects.create(user=user, address=address, product=item.product, quantity=item.quantity, totalprice=item.product.price*item.quantity,tdate=date,tid=trans_id,payment_mode=mode,order_status = 'pending',payment_status=status)
                 item.product.Quantity = item.product.Quantity - item.quantity
                 item.product.save()
             cart.delete()
-            messages.info(request,"Order placed Succesfully")
-            return redirect(showcart)
+            if mode == 'COD':
+                mode = 'COD'
+                messages.info(request,"Order placed Succesfully")
+                return JsonResponse({'mode':mode,'tid':trans_id},safe=False)    
+
+            elif mode == 'Paypal':
+                mode ='Paypal'
+                return JsonResponse({'mode':mode,'tid':trans_id},safe=False)    
+
+            elif mode == 'Razorpay':
+                order_amount = grandtotal*100
+                order_currency = 'INR'
+                client = razorpay.Client(auth = ('rzp_test_EJQneGlqu2SpAQ', 'oCisVDcytFHu60u7EGuzrinD'))
+                payment = client.order.create({'amount':order_amount, 'currency':order_currency, 'payment_capture': '1'})
+                print(payment)
+                mode = 'Razorpay'
+                return JsonResponse({'mode':mode,'tid':trans_id},safe=False)    
+
+            
+            # return redirect(showcart)
         else:   
             user = request.user 
             address = Address.objects.filter(id=id)        
@@ -285,10 +295,20 @@ def userpayment(request,id):
             for item in cart:
                 item.totalprice = item.quantity*item.product.price
                 grandtotal = grandtotal + item.totalprice
-            return render(request,'userapp/user_payment.html',{'cart_data': cart,'no':item_count,'grandtotal':grandtotal,'address':address})     
+            razorpay_total = grandtotal*100
+            return render(request,'userapp/user_payment.html',{'cart_data': cart,'no':item_count,'grandtotal':grandtotal,'address':address,'razorpay_total':razorpay_total})     
     else:
-        print('moonchi')
         return redirect(guesthome)
+
+def payplpayment(request):
+    tid = request.POST['tid']
+    print(tid)
+    orders = Order.objects.filter(tid=tid)
+    for order in orders:
+        order.payment_status ='SUCCESS'
+        order.save()
+    return JsonResponse('success',safe=False)    
+
 def userlogout(request):
      if request.user.is_authenticated:
         auth.logout(request)

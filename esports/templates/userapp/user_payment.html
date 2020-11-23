@@ -3,7 +3,6 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://www.paypal.com/sdk/js?client-id=AVYyzREj2CitbjQ4naNwZLXYMYqDkdHuuQBNdfPnVITy9HzX9Hnr9cHOhFuXT7SW-8RGTZz7x6cePybo&currency=USD"></script>
 <style>
 body {
   font-family: Arial;
@@ -109,6 +108,9 @@ span.price {
     margin-bottom: 20px;
   }
 }
+.razorpay-payment-button{
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -135,6 +137,8 @@ span.price {
                 <label for="state">State</label>
                 <input type="text" id="state"  disabled name="state" value="{{address.state}}" placeholder="Kerala"required>
               </div>
+              <input type="text" id= "address_id" hidden value="{{address.id}}">
+
               <div class="col-50">
                 <label for="zip">Zip</label>
                 <input type="text" id="zip"  disabled name="pincode" value="{{address.pincode}}" placeholder="695643"required>
@@ -145,34 +149,38 @@ span.price {
           
         </div>
         <p>Payment Method :</p>
-        <form   method="POST">
-          {% csrf_token %}
+        <form >
+          
         <div style="display: flex;">
         <input type="radio" id="cod" name="mode" value="COD" required>
         <label for="cod">COD</label><br>
+        <input type="radio" id="paypal" name="mode" value="Paypal" required>
+        <label for="Paypal">Paypal</label><br>
+        <input type="radio" id="razorpay" name="mode" value="Razorpay" required>
+        <label for="razorpay">RazorPay</label><br>
       </div>
       
-      <div style="margin-left: 4rem;" id="paypal-button-container"><input style="width: 47rem;;" type="submit" value="Pay on COD" class="btn" ></div>
-    </form>
-  <form method="POST" action="{% url 'guesthome' %}">
-    {% csrf_token %}
+      <div style="margin-left: 4rem;" ><input style="width: 47rem;" id="order" type="button" value="Place Order" class="btn" ></div>
+      <div id="paypal-button-container"></div>
+   
+    
       <script
       src="https://checkout.razorpay.com/v1/checkout.js"
-      data-key="rzp_test_CNSSWriikia1CT" 
-      data-amount="{{grandtotal}}"
+      data-key="rzp_test_EJQneGlqu2SpAQ" 
+      data-amount={{razorpay_total}}
       data-currency="INR"
       data-order_id="{{payment.id}}"
       data-buttontext="Pay with Razorpay"
-      data-name="Acme Corp"
+      data-name="Esports"
       data-description="Ecommerce for sports"
       data-image="https://example.com/your_logo.jpg"
       data-prefill.name="Gaurav Kumar"
       data-prefill.email="gaurav.kumar@example.com"
       data-theme.color="#F37254"
   ></script>
+<input type="hidden" custom='Hidden Element' name="hidden">
+</form>
 
-      </form>
-      
     </div>
   </div>
   <div class="col-25">
@@ -189,14 +197,16 @@ span.price {
 </div>
 
 
+<script src="https://www.paypal.com/sdk/js?client-id=AVYyzREj2CitbjQ4naNwZLXYMYqDkdHuuQBNdfPnVITy9HzX9Hnr9cHOhFuXT7SW-8RGTZz7x6cePybo&currency=USD" data-namespace="paypal_sdk"></script>
 
 
   <!-- Include the PayPal JavaScript SDK -->
   <script>
 
-  
+  function paypal(tid){
+ 
 // Render the PayPal button into #paypal-button-container
-paypal.Buttons({
+paypal_sdk.Buttons({
   
   // Set up the transaction
   createOrder: function(data, actions) {
@@ -216,16 +226,84 @@ paypal.Buttons({
       return actions.order.capture().then(function(details) {
           // Show a success message to the buyer
           console.log(details)
+          
           alert('Transaction completed by ' + details.payer.name.given_name + '!');
+          // window.location.replace("/show_cart")
+          console.log(tid)
+          successpaypal(tid)
+          
       });
   }
 
 
-}).render('#paypal-button-container');
+})
+.render('#paypal-button-container')
+  }
 
+  function successpaypal(tid){
+    
+    console.log(tid)
+    var userData = {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          tid : tid
+    
+        }
+    $.ajax({
+          url : '/paypal_payment/',
+          type: "POST",
+          data : userData,
+          dataType : "json",
+          success: function( data  ){
+            if (data == 'success'){
+
+              window.location.replace("/show_cart")
+            }
+
+          }
+      });
+  }
 
 </script>
+  <script
+src="https://code.jquery.com/jquery-3.5.0.min.js"
+integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+crossorigin="anonymous"
+></script>
+<script>
+  var amount = 0
+  $('#order').click(function(){
+    let id = $('#address_id').val()
+    console.log(id)
+    var userData = {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          mode : $("input[name='mode']:checked").val()
+    
+        }
+    $.ajax({
+          url : '/user_payment/'+id,
+          type: "POST",
+          data : userData,
+          dataType : "json",
+          success: function( data ){
+            if(data.mode == 'COD')
+              window.location.replace("/show_cart")
+            else if(data.mode == 'Paypal'){
+              console.log(data)
+              $('#order').hide()
+              paypal(data.tid)
+            }
+            else if(data.mode == 'Razorpay'){
+              console.log(data.mode)
+              $('#order').hide()
+              $('.razorpay-payment-button').click()
+              amount = data.amount
+  }
 
+          }
+      });
+  });
+
+</script>
 
 </body>
 </html>

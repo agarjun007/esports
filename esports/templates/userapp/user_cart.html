@@ -140,7 +140,7 @@
                       <form method="POST">
                         {% csrf_token %}
                       <button type="button" id="minus{{item.id}}" onclick="this.parentNode.querySelector('input[type=number]').stepDown();minus('{{item.id}}')" class="minus">-</button>
-                      <input class="quantity" id="qty{{item.id}}" min="1" name="quantity" value="{{item.quantity}}" type="number" style="width:13%" size="2"  autocomplete="off">
+                      <input class="quantity" id="qty{{item.id}}" min="1" name="quantity" value="{{item.quantity}}" type="number" style="width:13%" size="2" disabled autocomplete="off">
                       <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp();plus('{{item.id}}') "  class="plus">+</button>
                     </form>
                     </div>
@@ -164,7 +164,7 @@
           <div class="p-4">
            <p class="font-italic mb-4">Shipping and additional costs are calculated based on values you have entered.</p> 
             <ul class="list-unstyled mb-4">
-              <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Order Subtotal </strong><strong>₹. <span id="grandtotal" class="totalPrice">{{grandtotal}}</span></strong></li>
+              <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Order Subtotal </strong><strong>₹. <span id="subtotal" class="totalPrice">{{grandtotal}}</span></strong></li>
               <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Shipping and handling</strong><strong>₹.00</strong></li>
               <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Tax</strong><strong>₹. 00</strong></li>
               <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Total</strong>
@@ -187,11 +187,28 @@
     {% for message in messages %}
   alert('{{message}}')
   {% endfor %}
+
+  let quantity =  parseInt($('#qty').val());
+  if (quantity <= 1)
+    {
+      $('#minus').prop('disabled', true);
+    }
+    else{
+      $('#minus').prop('disabled', false);
+    }
   });
  
 
   function plus(plusid){
-    
+    let quantity =  parseInt($('#qty'+plusid).val());
+    console.log(quantity)
+    if (quantity <= 1)
+    {
+      $('#minus'+ plusid).prop('disabled', true);
+    }
+    else{
+      $('#minus'+ plusid).prop('disabled', false);
+    }
     data={
       "id":plusid,
       "value": "add",
@@ -208,6 +225,7 @@
             let grandtotal = parseInt(data.grandtotal)
             console.log(total)
             $('#output'+plusid).html(total)
+            $('#subtotal').html(grandtotal)
             $('#grandtotal').html(grandtotal)
 
           }

@@ -22,29 +22,33 @@
                       <th>Transaction ID</th>                   
                       <th>Name </th>
                       <th>Address</th>
-                      <th>Ordered date</th>
+                      <th>Ordered date</th>         
                       <th>Payment mode</th>
                       <th>payment status</th>
                       <th>Order status</th>
+                      <th>Total Price</th>
                       <th>Actions</th>
                       
                   </tr>
               </thead>
               <tbody>
-              {% for x in table_data %}
+              {% for id, order in table_data.items %}
                   <tr>
                       <td>{{forloop.counter}}</td>
-                      <td>{{x.tid}}</td>
-                      <td>{{x.address.name}}</td>
-                      <td>{{x.address.address }} {{x.address.city}} {{x.address.state}} {{x.address.pincode}}</td>
-                      <td>{{x.tdate}}</td>
-                      <td>{{x.payment_mode}}</td>
-                      <td>{{x.payment_status}}</td>
-                      <td>{{x.order_status}}</td>
+                    
+                      <td>{{id}}</td>
+                      <td>{{order.address.name}}</td>
+                      <td>{{order.address.address }} {{order.address.city}} {{order.address.state}} {{order.address.pincode}}</td>
+                      <td>{{order.tdate}}</td>                      
+                      <td>{{order.payment_mode}}</td>
+                      <td>{{order.payment_status}}</td>
+                      <td>{{order.order_status}}</td> 
+                     <td>{{order.orderprice}}</td>
                       <td>
-                          <a href="/confirm_order/{{x.tid}}" class="confirm" title="confirm" data-toggle="tooltip"><i style="color: green;" class="fas fa-check-circle"></i></a>
-                          <a href="/cancel_order/{{x.tid}}" class="cancel" title="Cancel" data-toggle="tooltip"><i style="color: red;" class="fas fa-window-close"></i></a>
+                          <a href="/confirm_order/{{order.tid}}" class="confirm" title="confirm" data-toggle="tooltip"><i style="color: green;" class="fas fa-check-circle"></i></a>
+                          <a href="/cancel_order/{{order.tid}}" class="cancel" title="Cancel" data-toggle="tooltip"><i style="color: red;" class="fas fa-window-close"></i></a>
                         </td>
+                       
                   </tr>
                      {% endfor %}  
               </tbody>
@@ -53,8 +57,6 @@
       </div>
   </div>  
 </div>  
-
-  
 
 {% endblock %} 
 
