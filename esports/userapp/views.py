@@ -80,31 +80,43 @@ def userprofile(request):
             user = request.user
             cart = Cart.objects.filter(user= user)
             item_count = cart.count()  
-            profilepic = request.FILES.get('profile-image-upload')
-            print(profilepic)
-            
-            userdetails = Userprofile.objects.get(user=user)
+            user.first_name = request.POST['name']
+            user.last_name = request.POST['mobile']
+            user.email = request.POST['email']
+            user.save()
+                        
+            if Userprofile.objects.filter(user=user).exists():
+                userdetails = Userprofile.objects.get(user=user)
 
-            if 'profile-image-upload' not in request.POST:
-                print('notinpost')
+                if 'profile-image-upload' not in request.POST:
+                    print('notinpost')
+                    profilepic = request.FILES.get('profile-image-upload')
+                else:
+                    print('inpost')
+                    profilepic = userdetails.profilepic
+
+                userdetails.profilepic = profilepic
+                userdetails.save()    
+            else: 
                 profilepic = request.FILES.get('profile-image-upload')
-            else:
-                print('inpost')
-                profilepic = userdetails.profilepic
-
-            userdetails.profilepic = profilepic
-            userdetails.save()
+                Userprofile.objects.create(user = user, profilepic = profilepic)
+            
             return redirect(userhome)
         else:        
             category = Category.objects.all()
             user = request.user
             cart = Cart.objects.filter(user= user)
-            item_count = cart.count()  
-            userdetails =Userprofile.objects.filter(user=user)
-            for i in userdetails:
-                userdetail = i
-                break
-            return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count,'userdetails':userdetail})
+            item_count = cart.count() 
+            if Userprofile.objects.filter(user=user).exists():
+                userdetails = Userprofile.objects.get(user=user)
+                    # for i in userdetails:
+                    #     userdetail = i
+                    #     break
+                return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count,'userdetails':userdetails})
+            else:
+                
+                return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count})
+
     else:
         return redirect(usersignin)      
 

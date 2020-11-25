@@ -38,7 +38,13 @@ def adminpanel(request):
         table = User.objects.all()
         product = products.objects.all()
         order = Order.objects.all()
-        length_order = len(order)
+        dict = {}
+        for order in order:
+            if not order.tid in dict.keys():
+                dict[order.tid]=order
+                
+        print(len(dict))
+        length_order = len(dict)
         length_user =len(table)
         length_product =len(product)
         labels = []
@@ -271,6 +277,7 @@ def adminpanel_orders(request):
                 dict[order.tid].orderprice = order.totalprice
             else:
                 dict[order.tid].orderprice += order.totalprice
+        print(len(dict))
         return render(request,'commerce/adminpanel_orders.html',{'table_data': dict})
     else:
         return redirect(adminlogin) 

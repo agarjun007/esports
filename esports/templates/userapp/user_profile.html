@@ -17,6 +17,7 @@
 {% endblock %} 
 
 {% block content %}
+
 <div style="    padding-top: 6rem;" class="container">
 	<div class="row">
 		
@@ -53,16 +54,16 @@
             <hr style="margin:5px 0 5px 0;">
     
               
-<div class="col-sm-5 col-xs-6 tital " >First Name:</div><div class="col-sm-7 col-xs-6 ">{{user.first_name}}</div>
+<div class="col-sm-5 col-xs-6 tital " >First Name:</div><div class="col-sm-7 col-xs-6 "> <input type="text" value="{{user.first_name}}" name="name" id=""> </div>
      <div class="clearfix"></div>
 <div class="bot-border"></div>
 
 
-<div class="col-sm-5 col-xs-6 tital " >Mobile Number:</div><div class="col-sm-7"> {{user.last_name}}</div>
+<div class="col-sm-5 col-xs-6 tital " >Mobile Number:</div><div class="col-sm-7"> <input type="text" value="{{user.last_name}}" name="mobile" id=""></div>
   <div class="clearfix"></div>
 <div class="bot-border"></div>
 
-<div class="col-sm-5 col-xs-6 tital " >Email</div><div class="col-sm-7">{{user.email}}</div>
+<div class="col-sm-5 col-xs-6 tital " >Email</div><div class="col-sm-7"><input type="text" value="{{user.email}}" name="email" id=""></div>
 
   <div class="clearfix"></div>
 <div class="bot-border"></div>
@@ -87,7 +88,13 @@
   }
 </style>
 
-{%endblock%}
+
+{%endblock%}       
+     
+   </div>
+</div>
+
+
 {% block script %}
     <script>
 
@@ -102,13 +109,3 @@ function viewImage(event){
               </script> 
                {%endblock%}
        
-       
-       
-       
-       
-       
-       
-       
-       
-   </div>
-</div>

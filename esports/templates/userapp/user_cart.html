@@ -188,14 +188,16 @@
   alert('{{message}}')
   {% endfor %}
 
-  let quantity =  parseInt($('#qty').val());
+{% for item in cart_data%}
+  var quantity =  parseInt($('#qty{{item.id}}').val());
   if (quantity <= 1)
     {
-      $('#minus').prop('disabled', true);
+      $('#minus{{item.id}}').prop('disabled', true);
     }
     else{
-      $('#minus').prop('disabled', false);
+      $('#minus{{item.id}}').prop('disabled', false);
     }
+    {% endfor %}
   });
  
 
@@ -259,6 +261,7 @@
             let grandtotal = parseInt(data.grandtotal)
             console.log(total)           
             $('#output'+minusid).html(total)
+            $('#subtotal').html(grandtotal)
             $('#grandtotal').html(grandtotal)
             if (quantity <= 1)
     {
