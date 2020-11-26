@@ -257,7 +257,19 @@ def updateuser(request,id):
     else:
         return redirect(adminlogin)           
                 
+def blockuser(request,id):
+    if request.session.has_key('password'):
+        user = User.objects.get(id=id) 
+        if user.is_active == True:
+            user.is_active = False
+            user.save()
 
+        else:
+            user.is_active = True   
+            user.save()
+        return redirect(adminpanel_user) 
+    else:
+       return redirect(adminlogin)   
 def deleteuser(request,id):
     if request.session.has_key('password'):
         user = User.objects.get(id=id) 

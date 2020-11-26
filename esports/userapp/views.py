@@ -31,7 +31,7 @@ def usersignup(request):
                 
                 # return redirect('/signin')
             else: 
-                user = User.objects.create_user(first_name=name,username=username,email=email,password = password1,last_name = mobile)
+                user = User.objects.create_user(first_name=name,username=username,email=email,password = password1,last_name = mobile, is_active =True)               
                 user.save();
             messages.info(request, "User created successfully..")  
             # return redirect(usersignin)  
@@ -50,13 +50,16 @@ def usersignin(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user = auth.authenticate(username=username , password=password)
-
-        if user is not None:
-            auth.login(request,user)
-            return JsonResponse('valid', safe=False)
-        else:
-            return JsonResponse('invalid', safe=False)
+        user = auth.authenticate(username=username , password=password,is_active = True)
+        usercheck =User.objects.get(username=username)
+        if usercheck.is_active == False:
+            return JsonResponse('blocked', safe=False)
+        else:    
+            if user is not None:
+                auth.login(request,user)
+                return JsonResponse('valid', safe=False)
+            else:
+                return JsonResponse('invalid', safe=False)
     else:
         return render(request,'userapp/user_signin.html')
    
@@ -229,7 +232,7 @@ def showaddress(request):
     else:
         return redirect(guesthome)
 
-def editaddress(request):
+def createaddress(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
             user = request.user
@@ -245,6 +248,25 @@ def editaddress(request):
             return render(request,'userapp/edit_address.html')   
     else:
         return redirect(guesthome)             
+
+
+def editaddress(request,id):
+    if request.user.is_authenticated:
+        address_details =Address.objects.get(id =id)
+        if request.method == 'POST':
+            address_details.name = request.POST['firstname']
+            address_details.email = request.POST['email']
+            address_details.address = request.POST['address']
+            address_details.city = request.POST['city']
+            address_details.state = request.POST['state']
+            address_details.pincode = request.POST['pincode']
+            address_details.save()
+            return redirect(showaddress)
+        else:
+            edit = 1
+            return render(request,'userapp/edit_address.html',{'address':address_details,'edit':edit})   
+    else:
+        return redirect(guesthome)         
 
 def userorderhistory(request):
     if request.user.is_authenticated:
@@ -266,6 +288,13 @@ def userpayment(request,id):
             date = datetime.datetime.now()
             trans_id = datetime.datetime.now().timestamp()
             mode =  request.POST['mode']
+            address.name = request.POST['name']
+            address.email = request.POST['email']
+            address.addrees = request.POST['address']
+            address.city = request.POST['city']
+            address.state = request.POST['state']
+            address.pincode = request.POST['pincode']
+            address.save()
             print(mode)
             cart = Cart.objects.filter(user= user)
             status= 'pending'

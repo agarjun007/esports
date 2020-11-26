@@ -109,6 +109,10 @@
             success: function( data ){
               if(data == 'valid')
                 window.location.replace("/home")
+              if (data == 'blocked') { 
+                $('#invalid').html('Account Blocked')
+                $('#pass').val('')
+                }
               if(data == 'invalid'){
                 $('#invalid').html('invalid Username/Password')
                 $('#pass').val('')

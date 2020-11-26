@@ -11,6 +11,8 @@ urlpatterns = [
     path('edit_user/<int:id>', views.edituser,name='edituser'),
     path('update_user/<int:id>', views.updateuser,name='updateuser'),
     path('delete_user/<int:id>', views.deleteuser,name='deleteuser'),
+    path('block_user/<int:id>', views.blockuser,name='blockuser'),
+
     
     path('adminpanel_category/', views.adminpanel_category,name='adminpanelcategory'),
     path('create_category/', views.createcategory,name='createcategory'),

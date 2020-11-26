@@ -30,6 +30,7 @@
                         <th>Email </th>
                         <th>Username</th>
                         <th>Mobile Number</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -43,9 +44,17 @@
                         <td>{{x.email}}</td>
                         <td>{{x.username}}</td>
                         <td>{{x.last_name}}</td>
+                        {% if x.is_active == True %}
+                        <td>Active</td>
+                        {% else %}
+                        <td>Blocked</td>
+                        {% endif %}
+
                         <td>
                            <a href="/edit_user/{{x.id}}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                            <a href="/delete_user/{{x.id}}" class="delete" title="Delete" data-toggle="tooltip"><i Onclick= "return confirm('Are you sure you want to delete {{x.first_name}} ?')" class="material-icons">&#xE872;</i></a>
+                            <a href="/delete_user/{{x.id}}" class="delete" title="Delete" data-toggle="tooltip"><i Onclick= "return confirm('Are you sure you want to delete {{x.first_name}} ?')" class="material-icons ">&#xE872;</i></a>
+                            <a href="/block_user/{{x.id}}" id="block" class="block" title="Block" data-toggle="tooltip"><i style="color: red;" Onclick= "block()" class="fas fa-ban" ></i></a>
+
                         </td>
                     </tr>
                        {% endfor %}  
@@ -77,7 +86,11 @@
    
     $(document).ready(function() {
      $('#myTable').DataTable();
- } );
     
+ } );
+ function block(){
+    return confirm('Are you sure you want to Block {{x.first_name}} ?')
+         console.log('clicked')
+     }
     </script>
 {%endblock%}
