@@ -29,7 +29,45 @@
   </head>
 
   <body>
-    {% if otp == 1 %}
+
+    {% if otpfield == 1 %}
+
+    <div class="login-dark">
+<form id="form"  action="/verifyotp/" style="margin-left: 20%;">
+        {% csrf_token %}
+          <h2 style="text-align: center; color:#0a59ad; margin-top: -35px;">Login</h2>
+          <div class="illustration" style="margin-top: -38px;"><img src="{% static 'userapp/images/logo.png' %}"></div>
+          <div class="form-group">
+            <input style="color: black;" id="otp"class="form-control" type="text"name="otp" placeholder="Enter your OTP"/>
+          </div>
+
+                <div class="form-group">
+                    <button id="verifyotp"  class="btn btn-primary btn-block" type="button">
+                    Verify and Login
+                    </button>
+                </div>
+
+
+
+                <span style="color: red;" id="invalid"></span>
+                <div class="form-group">
+                    <p style="color: black;">Login with password<a href="/signin/">click here</a></p>
+            
+                </div>
+                
+                <p style="color: black;">Don't have an account?<a href="/signup/">Sign Up</a></p>
+                <a
+                    href="https://agarjun007.github.io/personal_website/index.html"
+                    target="_blank"
+                    class="forgot"
+                    >© 2020 Design by ARJUN.A.G
+                </a>
+                
+            </div>
+ </form>
+
+    {%else%}
+  
     <div class="login-dark">
       <form id="form" style="margin-left: 20%;">
       
@@ -46,9 +84,9 @@
         </div>
         
         <div class="form-group">
-         <a href="/verifyotp/"><button id="button"  class="btn btn-primary btn-block" type="button">
+         <button id="sendotp"  class="btn btn-primary btn-block" type="button">
             Send OTP
-          </button></a>
+          </button>
         </div>
  
 
@@ -70,69 +108,9 @@
     </div>
   </form>
  
-    {% else %}
 
-    <div class="login-dark">
-      <form id="form" style="margin-left: 20%;">
-        {% csrf_token %}
-        <h2 style="text-align: center; color:#0a59ad; margin-top: -35px;">Login</h2>
-        <div class="illustration" style="margin-top: -38px;"><img src="{% static 'userapp/images/logo.png' %}"></div>
-        <div class="form-group">
-          <input style="color: black;"
-            id="username"
-            class="form-control"
-            type="text"
-            name="username"
-            placeholder="username"
-          />
-        </div>
-        <div class="form-group">
-          <input style="color: black;"" id="pass" class="form-control" type="password" name="password"  placeholder="Password"/>
-        </div>
-        <div class="form-group">
-          <button id="button"  class="btn btn-primary btn-block" type="button">
-            Log In
-          </button>
-        </div>
-        <span style="color: red;" id="invalid"></span>
-        <div class="form-group">
-          <p style="color: black;">Login with Mobile?<a href="/otplogin/">click here</a></p>
-  
-        </div>
-        
-        <p style="color: black;">Don't have an account?<a href="/signup/">Sign Up</a></p>
-        <a
-          href="https://agarjun007.github.io/personal_website/index.html"
-          target="_blank"
-          class="forgot"
-          >© 2020 Design by ARJUN.A.G
-        </a>
-      </form>
-    </div>
-    {% endif %}
-
-    {% if modal == 1 %}
-    <!-- Modal -->
-    <div class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Modal body text goes here.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Save changes</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif%}
+   {% endif %}
+   
     
 
   <script
@@ -155,40 +133,36 @@
     integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
     crossorigin="anonymous"
   ></script>
-  
   <script type="text/javascript">
     $( document ).ready(function() {
-      $( "#button" ).click(function() {
+      $( "#sendotp" ).click(function() {
         var userData = {
           csrfmiddlewaretoken: '{{ csrf_token }}',
-          username: $('#username').val(),
-          password: $('#pass').val()
+          mobile: $('#mobile').val(),
+         
         }
-      if (userData.username === '')
+      if (userData.mobile === '')
      {
-      $('#invalid').html('please enter username')
+      $('#invalid').html('Please enter registered Mobile Number')
      }
-          
-     else if (userData.password === '')
-     {
-      $('#invalid').html('please enter password')
-     }
+     
      else{
         $.ajax({
-            url : '/signin/',
+            url : '/otplogin/',
             type: "POST",
             data : userData,
             dataType : "json",
             success: function( data ){
+                if(data == 'blocked'){
+                $('#invalid').html('Accout is Blocked')
+                
+              }
               if(data == 'valid')
-                window.location.replace("/home")
-              if (data == 'blocked') { 
-                $('#invalid').html('Account Blocked')
-                $('#pass').val('')
-                }
+                window.location.replace("/verifyotp")
+
               if(data == 'invalid'){
-                $('#invalid').html('invalid Username/Password')
-                $('#pass').val('')
+                $('#invalid').html('Mobile number not registered')
+                
               }
             }
         });
@@ -196,7 +170,53 @@
       });
      
     });
+
+//verify OTP
+$( document ).ready(function() {
+      $( "#verifyotp" ).click(function() {
+        var userData = {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          otp: $('#otp').val(),
+         
+        }
+      if (userData.otp === '')
+     {
+      $('#invalid').html('Please enter a valid OTP')
+     }
+     
+     else{
+        $.ajax({
+            url : '/verifyotp/',
+            type: "POST",
+            data : userData,
+            dataType : "json",
+            success: function( data ){
+                if(data == 'blocked'){
+                $('#invalid').html('Accout is Blocked')
+                
+              }
+              if(data == 'valid')
+                window.location.replace("/home")
+
+              if(data == 'invalid'){
+                $('#invalid').html('User not exists')
+                
+              }
+              if(data == 'otp_mismatch'){
+                $('#invalid').html('OTP not matching')
+                
+              }
+            }
+        });
+     }
+      });
+     
+    });
+
+
   </script>
+  
+
   
     
   </body>

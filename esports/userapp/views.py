@@ -1,5 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User,auth
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.http import JsonResponse
 from django.http import HttpResponse 
@@ -10,6 +12,8 @@ from django.core.files.storage import FileSystemStorage
 from PIL import Image
 from django.core.files import File
 import razorpay
+import requests
+import json
 
 # Create your views here.
 
@@ -50,19 +54,113 @@ def usersignin(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user = auth.authenticate(username=username , password=password,is_active = True)
-        usercheck =User.objects.get(username=username)
-        if usercheck.is_active == False:
-            return JsonResponse('blocked', safe=False)
-        else:    
-            if user is not None:
+        user =User.objects.filter(username=username).first()
+        
+        if user is not None and check_password(password, user.password):
+            if user.is_active == False:
+                return JsonResponse('blocked', safe=False)
+            else:
                 auth.login(request,user)
                 return JsonResponse('valid', safe=False)
+        else:
+            return JsonResponse('invalid', safe=False)
+    else:
+        
+        return render(request,'userapp/user_signin.html')
+
+def otplogin(request):
+    if  request.method == 'POST':
+        mobile = request.POST['mobile']
+        if User.objects.filter(last_name=mobile).exists():
+            user = User.objects.get(last_name=mobile)
+            if user.is_active == True:
+                mobile = str(91) + mobile
+                request.session['mobile'] = mobile
+                print(mobile)
+                url = "https://d7networks.com/api/verifier/send"
+
+                payload = {'mobile': mobile,
+                'sender_id': 'SMSINFO',
+                'message': 'Your otp code is {code}',
+                'expiry': '9000'}
+                files = [
+
+                ]
+                headers = {
+                'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
+                }
+
+                response = requests.request("POST", url, headers=headers, data = payload, files = files)
+
+                print(response.text.encode('utf8'))
+                data=response.text.encode('utf8')
+                datadict=json.loads(data.decode('utf-8'))
+
+                id=datadict['otp_id']
+                # status=datadict['status']
+                print('id:',id)
+                request.session['id'] = id
+
+                return JsonResponse('valid',safe=False)
+            else:
+                return JsonResponse('blocked',safe=False)    
+
+        else:
+            return JsonResponse('invalid',safe=False)    
+    else:    
+        otpfield =0
+        return render(request,'userapp/otp_signin.html',{'otpfield':otpfield})       
+   
+def verifyotp(request):
+    if request.method == 'POST':
+        otp = request.POST['otp']
+        otp_id = request.session['id']  
+        print(otp_id)  
+
+        url = "https://d7networks.com/api/verifier/verify"
+
+        payload = {'otp_id': otp_id,
+        'otp_code': otp}
+        files = [
+
+        ]
+        headers = {
+        'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
+        }
+
+        response = requests.request("POST", url, headers=headers, data = payload, files = files)
+
+        print(response.text.encode('utf8'))
+        data=response.text.encode('utf8')
+        datadict=json.loads(data.decode('utf-8'))
+        status=datadict['status']
+
+        if status=='success':
+            print('sucesssssssssssssssss')
+            mobile = request.session['mobile']
+            print(mobile)
+            newmobile = str(mobile)
+            newmobile =newmobile[-10:]
+            print(newmobile)
+            user =User.objects.filter(last_name=newmobile).first()
+            print(mobile, user)
+            if user is not None :
+                if user.is_active == False:
+                    return JsonResponse('blocked', safe=False)
+                else:
+                    auth.login(request,user)
+                    return JsonResponse('valid', safe=False)
             else:
                 return JsonResponse('invalid', safe=False)
+        
+        else:
+            print('FAileddddddddddddddddd')
+            
+            return JsonResponse('otp_mismatch', safe=False)
+            
     else:
-        return render(request,'userapp/user_signin.html')
-   
+        otpfield =1
+        return render(request,'userapp/otp_signin.html',{'otpfield':otpfield})    
 
 def userhome(request):   
     if request.user.is_authenticated:
