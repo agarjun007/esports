@@ -108,7 +108,7 @@ span.price {
     margin-bottom: 20px;
   }
 }
-.razorpay-payment-button{
+#rzp-button1{
   display: none;
 }
 </style>
@@ -168,23 +168,6 @@ span.price {
       
       <div style="margin-left: 4rem;" ><input style="width: 47rem;" id="order" type="button" value="Place Order" class="btn" ></div>
       <div id="paypal-button-container"></div>
-   
-    
-      <script
-      src="https://checkout.razorpay.com/v1/checkout.js"
-      data-key="rzp_test_EJQneGlqu2SpAQ" 
-      data-amount={{razorpay_total}}
-      data-currency="INR"
-      data-order_id="{{payment.id}}"
-      data-buttontext="Pay with Razorpay"
-      data-name="Esports"
-      data-description="Ecommerce for sports"
-      data-image="https://example.com/your_logo.jpg"
-      data-prefill.name="Gaurav Kumar"
-      data-prefill.email="gaurav.kumar@example.com"
-      data-theme.color="#F37254"
-  ></script>
-<input type="hidden" custom='Hidden Element' name="hidden">
 </form>
 
     </div>
@@ -315,7 +298,7 @@ crossorigin="anonymous"
      {
       $('#invalid').html('please enter your pincode')
      }
-     else if ("input[name='mode']:")
+     else if (userData.mode ==='')
      {
       $('#invalid').html('please select a mode')
      }
@@ -336,8 +319,8 @@ crossorigin="anonymous"
             else if(data.mode == 'Razorpay'){
               console.log(data.mode)
               $('#order').hide()
-              $('.razorpay-payment-button').click()
-              amount = data.amount
+              razorpay(data.tid)
+              // amount = data.amount
               }
 
           }
@@ -348,6 +331,66 @@ crossorigin="anonymous"
   });
 
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            <script>
+              function razorpay(tid){
+                var total = '{{razorpay_total}}'
+                var payment_status = 'razorpay'
+                var options = {
+                    "key": "rzp_test_EJQneGlqu2SpAQ", // Enter the Key ID generated from the Dashboard
+                    "amount": total, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    "currency": "INR",
+                    "name": "Esports",
+                    "description": "Test Transaction",
+                    "image": "https://example.com/your_logo",
+                    "order_id": "{{payment.id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    "handler": function (response) {
+                      alert('Transaction completed..!!!');
+                        successrazorpay(tid)
+                    },
+                    "prefill": {
+                        "name": "{{address.name}}",
+                        "email": "{{address.email}}",
+                        "contact": "9999999999"
+                    },
+                    "notes": {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    "theme": {
+                        "color": "#F37254"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                
+                    rzp1.open();
+                    
+              } 
+
+          
+  function successrazorpay(tid){
+    
+    console.log(tid)
+    var userData = {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          tid : tid
+    
+        }
+    $.ajax({
+          url : '/razorpay_payment/',
+          type: "POST",
+          data : userData,
+          dataType : "json",
+          success: function( data  ){
+            if (data == 'success'){
+
+              window.location.replace("/show_cart")
+            }
+
+          }
+      });
+  }    
+
+            </script>
 
 </body>
 </html>

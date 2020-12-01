@@ -10,7 +10,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from PIL import Image
 from django.core.files import File
-
+from datetime import date,datetime,timedelta
 
 # Create your views here.
 def adminlogin(request):
@@ -318,15 +318,112 @@ def adminpanel_reports(request):
     if request.session.has_key('password'):
         if request.method == 'POST':
             report_mode = 1
-            date = request.POST['report']
-            table = Order.objects.filter(tdate = date)
-            print(date)
-            return render(request,'commerce/adminpanel_reports.html',{'table_data': table,'report_mode':report_mode})
+            if 'date_report' in request.POST:                
+                from_date = request.POST['from']
+                to_date = request.POST['to']
+                orders = Order.objects.filter(tdate__range=[from_date, to_date])
+                print(from_date,to_date)
+                dict = {}           
+                for order in orders:
+                    if not order.tid in dict.keys():
+                        dict[order.tid]=order
+                        dict[order.tid].orderprice = order.totalprice
+                    else:
+                        dict[order.tid].orderprice += order.totalprice
+                        
+                return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode})
+            elif 'category_report' in request.POST:
+                report_type = request.POST['report_type']
+                if report_type == 'this_day':
+                    print(report_type)
+                    today_date = date.today()
+                    orders = Order.objects.filter(tdate=today_date)
+                    dict = {}           
+                    for order in orders:
+                        if not order.tid in dict.keys():
+                            dict[order.tid]=order
+                            dict[order.tid].orderprice = order.totalprice
+                        else:
+                            dict[order.tid].orderprice += order.totalprice
+                            
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':'Today'})
+
+                elif report_type == 'last_7_days':
+                    print(report_type) 
+                    today = date.today()
+                    lastweek_from = today - timedelta(days=7)
+                    print(lastweek_from)
+                    orders = Order.objects.filter(tdate__range=[lastweek_from, today])
+                    print(lastweek_from,today)
+                    dict = {}           
+                    for order in orders:
+                        if not order.tid in dict.keys():
+                            dict[order.tid]=order
+                            dict[order.tid].orderprice = order.totalprice
+                        else:
+                            dict[order.tid].orderprice += order.totalprice
+                            
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':'Previous Week'})
+
+                elif report_type == 'this_month':
+                    print(report_type)  
+                    today_date = date.today()
+                    # month = today_date.month
+                    month = today_date.strftime('%B')
+                    orders = Order.objects.filter(tdate__month=today_date.month)
+                    dict = {}           
+                    for order in orders:
+                        if not order.tid in dict.keys():
+                            dict[order.tid]=order
+                            dict[order.tid].orderprice = order.totalprice
+                        else:
+                            dict[order.tid].orderprice += order.totalprice
+                            
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':month})
+
+                elif report_type == 'annual':
+                    print(report_type)     
+                    today_date = date.today()
+                    year =today_date.year
+                    orders = Order.objects.filter(tdate__year=today_date.year)
+                    dict = {}           
+                    for order in orders:
+                        if not order.tid in dict.keys():
+                            dict[order.tid]=order
+                            dict[order.tid].orderprice = order.totalprice
+                        else:
+                            dict[order.tid].orderprice += order.totalprice
+                            
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':year})
 
         else:
             return render(request,'commerce/adminpanel_reports.html')
     else:
         return redirect(adminlogin)
+
+def adminpanel_subreports(request,status):
+    if status == 'Confirmed':
+        orders = Order.objects.filter(order_status=status)               
+        dict = {}           
+        for order in orders:
+            if not order.tid in dict.keys():
+                dict[order.tid]=order
+                dict[order.tid].orderprice = order.totalprice
+            else:
+                dict[order.tid].orderprice += order.totalprice
+        
+        return render(request,'commerce/adminpanel_subreports.html',{'table_data': dict,'heading':status}) 
+
+    elif status == 'Cancelled':
+        orders = Order.objects.filter(order_status=status)               
+        dict = {}           
+        for order in orders:
+            if not order.tid in dict.keys():
+                dict[order.tid]=order
+                dict[order.tid].orderprice = order.totalprice
+            else:
+                dict[order.tid].orderprice += order.totalprice        
+        return render(request,'commerce/adminpanel_subreports.html',{'table_data': dict,'heading':status}) 
         
 def adminlogout(request):
     if request.session.has_key('password'):

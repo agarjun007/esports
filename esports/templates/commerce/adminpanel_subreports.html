@@ -5,34 +5,14 @@
 
 
 {% block content%}
-<form method="POST" action="/adminpanel_reports/">
-    {% csrf_token %}
-    <label for="report">Select a Date:</label>
-    <input type="date" id="from" name="from" required>
-    <input type="date" id="to" name="to" required>
-    <button name="date_report" class="btn-success" type="submit">Show Report</button>
-  </form>
 
-  <form method="POST" action="">
-    {% csrf_token %}
-    <label for="category">Report</label>
-
-<select name="report_type" id="report_type">
-  <option value="this_day">This day</option>
-  <option value="last_7_days">last 7 days</option>
-  <option value="this_month">This Month</option>
-  <option value="annual">Annual</option>
-</select>
-    <button name="category_report" class="btn-success" type="submit">Show Report</button>
-  </form>
-  {% if report_mode == 1 %}
 <div class="container-xl">
   <div class="table-responsive">
    
       <div class="table-wrapper">
           <div class="table-title">
               <div class="row">
-                  <div class="col-sm-8"><h2>{{heading}}&nbsp;<b>Sales</b> <b>Report</b></h2></div>
+                  <div class="col-sm-8"><h2>{{heading}}&nbsp;<b>Order</b> <b>Report</b></h2></div>
                   
               </div>
           </div>
@@ -70,7 +50,6 @@
       </div>
   </div>  
 </div>  
-{% endif %}
 
 {% endblock %} 
 

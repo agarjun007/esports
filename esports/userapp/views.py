@@ -112,55 +112,61 @@ def otplogin(request):
         return render(request,'userapp/otp_signin.html',{'otpfield':otpfield})       
    
 def verifyotp(request):
-    if request.method == 'POST':
-        otp = request.POST['otp']
-        otp_id = request.session['id']  
-        print(otp_id)  
+    if request.session.has_key('id'):
+        if request.method == 'POST':
+            otp = request.POST['otp']
+            otp_id = request.session['id']  
+            print(otp_id)  
 
-        url = "https://d7networks.com/api/verifier/verify"
+            url = "https://d7networks.com/api/verifier/verify"
 
-        payload = {'otp_id': otp_id,
-        'otp_code': otp}
-        files = [
+            payload = {'otp_id': otp_id,
+            'otp_code': otp}
+            files = [
 
-        ]
-        headers = {
-        'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
-        }
+            ]
+            headers = {
+            'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
+            }
 
-        response = requests.request("POST", url, headers=headers, data = payload, files = files)
+            response = requests.request("POST", url, headers=headers, data = payload, files = files)
 
-        print(response.text.encode('utf8'))
-        data=response.text.encode('utf8')
-        datadict=json.loads(data.decode('utf-8'))
-        status=datadict['status']
+            print(response.text.encode('utf8'))
+            data=response.text.encode('utf8')
+            datadict=json.loads(data.decode('utf-8'))
+            status=datadict['status']
 
-        if status=='success':
-            print('sucesssssssssssssssss')
-            mobile = request.session['mobile']
-            print(mobile)
-            newmobile = str(mobile)
-            newmobile =newmobile[-10:]
-            print(newmobile)
-            user =User.objects.filter(last_name=newmobile).first()
-            print(mobile, user)
-            if user is not None :
-                if user.is_active == False:
-                    return JsonResponse('blocked', safe=False)
+            if status=='success':
+                print('sucesssssssssssssssss')
+                mobile = request.session['mobile']
+                print(mobile)
+                newmobile = str(mobile)
+                newmobile =newmobile[-10:]
+                print(newmobile)
+                user =User.objects.filter(last_name=newmobile).first()
+                print(mobile, user)
+                if user is not None :
+                    if user.is_active == False:
+                        del request.session['id']
+                        return JsonResponse('blocked', safe=False)
+                    else:
+                        auth.login(request,user)
+                        return JsonResponse('valid', safe=False)
                 else:
-                    auth.login(request,user)
-                    return JsonResponse('valid', safe=False)
+                    del request.session['id']
+                    return JsonResponse('invalid', safe=False)
+            
             else:
-                return JsonResponse('invalid', safe=False)
-        
+                del request.session['id']
+                print('FAileddddddddddddddddd')
+                
+                return JsonResponse('otp_mismatch', safe=False)
+                
         else:
-            print('FAileddddddddddddddddd')
-            
-            return JsonResponse('otp_mismatch', safe=False)
-            
+            otpfield =1
+            return render(request,'userapp/otp_signin.html',{'otpfield':otpfield})   
     else:
-        otpfield =1
-        return render(request,'userapp/otp_signin.html',{'otpfield':otpfield})    
+        return redirect(usersignin)  
 
 def userhome(request):   
     if request.user.is_authenticated:
@@ -446,7 +452,16 @@ def payplpayment(request):
     for order in orders:
         order.payment_status ='SUCCESS'
         order.save()
-    return JsonResponse('success',safe=False)    
+    return JsonResponse('success',safe=False)  
+
+def razorpaypayment(request):
+    tid = request.POST['tid']
+    print(tid)
+    orders = Order.objects.filter(tid=tid)
+    for order in orders:
+        order.payment_status ='SUCCESS'
+        order.save()
+    return JsonResponse('success',safe=False)      
 
 def userlogout(request):
      if request.user.is_authenticated:

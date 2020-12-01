@@ -31,5 +31,7 @@ urlpatterns = [
     path('cancel_order/<str:tid>', views.cancel_order,name='cancelorder'),
 
     path('adminpanel_reports/', views.adminpanel_reports,name='adminpanelreports'),
+    path('adminpanel_subreports/<str:status>', views.adminpanel_subreports,name='adminpanelsubreports'),
+
  
 ]
