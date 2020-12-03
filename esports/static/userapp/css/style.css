@@ -7,7 +7,9 @@
       line-height: 1.5;
       color: #212529;
       text-align: left;
-      background-color: #f0eded;
+
+      background:#ece9e9 
+
       
      
   
@@ -72,12 +74,12 @@
 }
 
  .dropdown:hover .dropbtn {
-  background-color: red;
+  background-color: #070b29;
 }
 .home:hover,.login:hover
 {
   cursor: pointer;
-  background-color: red;
+  background-color:#070b29;
 }
 .cart{
   cursor: pointer;

@@ -14,10 +14,7 @@ from django.core.files import File
 import razorpay
 import requests
 import json
-
-# Create your views here.
-
-   
+  
 def usersignup(request):
     if request.user.is_authenticated:
         return redirect(userhome)
@@ -32,19 +29,14 @@ def usersignup(request):
         if password1 == password2:
             if User.objects.filter(username=username).exists():
                 return JsonResponse('usernamemismatch',safe=False)
-                
-                # return redirect('/signin')
             else: 
                 user = User.objects.create_user(first_name=name,username=username,email=email,password = password1,last_name = mobile, is_active =True)               
                 user.save();
             messages.info(request, "User created successfully..")  
-            # return redirect(usersignin)  
             return JsonResponse('valid', safe=False)       
         else:
             return JsonResponse('invalid', safe=False)
             messages.info(request,"password not match")
-            # return redirect('/signin')
-
     else:    
         return render(request,'userapp/signup.html')   
 
@@ -55,7 +47,7 @@ def usersignin(request):
         username = request.POST['username']
         password = request.POST['password']
         user =User.objects.filter(username=username).first()
-        
+
         if user is not None and check_password(password, user.password):
             if user.is_active == False:
                 return JsonResponse('blocked', safe=False)
@@ -76,7 +68,6 @@ def otplogin(request):
             if user.is_active == True:
                 mobile = str(91) + mobile
                 request.session['mobile'] = mobile
-                print(mobile)
                 url = "https://d7networks.com/api/verifier/send"
 
                 payload = {'mobile': mobile,
@@ -116,7 +107,6 @@ def verifyotp(request):
         if request.method == 'POST':
             otp = request.POST['otp']
             otp_id = request.session['id']  
-            print(otp_id)  
 
             url = "https://d7networks.com/api/verifier/verify"
 
@@ -131,20 +121,15 @@ def verifyotp(request):
 
             response = requests.request("POST", url, headers=headers, data = payload, files = files)
 
-            print(response.text.encode('utf8'))
             data=response.text.encode('utf8')
             datadict=json.loads(data.decode('utf-8'))
             status=datadict['status']
 
             if status=='success':
-                print('sucesssssssssssssssss')
                 mobile = request.session['mobile']
-                print(mobile)
                 newmobile = str(mobile)
                 newmobile =newmobile[-10:]
-                print(newmobile)
                 user =User.objects.filter(last_name=newmobile).first()
-                print(mobile, user)
                 if user is not None :
                     if user.is_active == False:
                         del request.session['id']
@@ -157,9 +142,7 @@ def verifyotp(request):
                     return JsonResponse('invalid', safe=False)
             
             else:
-                del request.session['id']
-                print('FAileddddddddddddddddd')
-                
+                del request.session['id']                
                 return JsonResponse('otp_mismatch', safe=False)
                 
         else:
@@ -182,7 +165,6 @@ def userhome(request):
 def userprofile(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            print('post')
             category = Category.objects.all()
             user = request.user
             cart = Cart.objects.filter(user= user)
@@ -196,10 +178,8 @@ def userprofile(request):
                 userdetails = Userprofile.objects.get(user=user)
 
                 if 'profile-image-upload' not in request.POST:
-                    print('notinpost')
                     profilepic = request.FILES.get('profile-image-upload')
                 else:
-                    print('inpost')
                     profilepic = userdetails.profilepic
 
                 userdetails.profilepic = profilepic
@@ -216,14 +196,10 @@ def userprofile(request):
             item_count = cart.count() 
             if Userprofile.objects.filter(user=user).exists():
                 userdetails = Userprofile.objects.get(user=user)
-                    # for i in userdetails:
-                    #     userdetail = i
-                    #     break
                 return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count,'userdetails':userdetails})
             else:
                 
                 return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count})
-
     else:
         return redirect(usersignin)      
 
@@ -244,7 +220,7 @@ def guesthome(request):
     product = products.objects.all()
     category = Category.objects.all()
 
-    return render(request,'userapp/guest_home.html',{'product_data':product,'category_data':category})
+    return render(request,'userapp/guest_home.html',{'product_data':product,'category_data':category,'guest':'Guest'})
            
 def productview(request,id):
     if request.user.is_authenticated:
@@ -255,8 +231,10 @@ def productview(request,id):
         product = products.objects.get(id=id)
         return render(request,'userapp/user_product_view.html',{'product_data':product,'category_data':category,'no':item_count})
     else:
-        return redirect(guesthome)
-
+        category = Category.objects.all()
+        product = products.objects.get(id=id)
+        return render(request,'userapp/guest_product_view.html',{'product_data':product,'category_data':category,'guest':'Guest'})
+ 
 def showcart(request): 
     if request.user.is_authenticated:
         user = request.user
@@ -273,7 +251,7 @@ def showcart(request):
             return render(request,'userapp/user_cart.html',{'cart_data': cart,'category_data':category,'no':item_count,'grandtotal':grandtotal}) 
         
     else:
-        return redirect(guesthome)
+        return redirect(usersignin)
 
 def deleteitem(request,id): 
     if request.user.is_authenticated:        
@@ -399,7 +377,6 @@ def userpayment(request,id):
             address.state = request.POST['state']
             address.pincode = request.POST['pincode']
             address.save()
-            print(mode)
             cart = Cart.objects.filter(user= user)
             status= 'pending'
             for item in cart:
@@ -425,12 +402,8 @@ def userpayment(request,id):
                 order_currency = 'INR'
                 client = razorpay.Client(auth = ('rzp_test_EJQneGlqu2SpAQ', 'oCisVDcytFHu60u7EGuzrinD'))
                 payment = client.order.create({'amount':order_amount, 'currency':order_currency, 'payment_capture': '1'})
-                print(payment)
                 mode = 'Razorpay'
                 return JsonResponse({'mode':mode,'tid':trans_id},safe=False)    
-
-            
-            # return redirect(showcart)
         else:   
             user = request.user 
             address = Address.objects.filter(id=id)        
@@ -447,7 +420,6 @@ def userpayment(request,id):
 
 def payplpayment(request):
     tid = request.POST['tid']
-    print(tid)
     orders = Order.objects.filter(tid=tid)
     for order in orders:
         order.payment_status ='SUCCESS'
@@ -456,7 +428,6 @@ def payplpayment(request):
 
 def razorpaypayment(request):
     tid = request.POST['tid']
-    print(tid)
     orders = Order.objects.filter(tid=tid)
     for order in orders:
         order.payment_status ='SUCCESS'

@@ -1,30 +1,182 @@
-<!DOCTYPE html>
+{% extends 'userapp/user_home.html' %}
 
-{% load static %}
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>product view</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href=" {%static 'userapp/css/style.css'%} " /> 
-    <link rel="stylesheet" href="https://codepen.io/imgix/pen/d06269809bb83c85326ebbbf7e81241b">
-    <link rel="stylesheet" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/164071/drift-basic.css">
+  
+
+{%block head%}
+<link rel="stylesheet" href="https://codepen.io/imgix/pen/d06269809bb83c85326ebbbf7e81241b" >
+<link rel="stylesheet" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/164071/drift-basic.css" >
+
+{%endblock%}
+{% block login%}
+{% endblock%}
 
 
-<link rel="icon" href="https://cdn3.iconfinder.com/data/icons/ui-ux-essentials-solid/24/unlocked-solid-512.png" type="image/icon type"/>
-  </head>   
-<body>
+
+{% block content %}
+{% block carousel %}
+{%endblock%}
+
 <style>
 
+img {
+  max-width: 100%; }
+
+.preview {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column; }
+  @media screen and (max-width: 996px) {
+    .preview {
+      margin-bottom: 20px; } }
+
+.preview-pic {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1; }
+
+.preview-thumbnail.nav-tabs {
+  border: none;
+  margin-top: 15px; }
+  .preview-thumbnail.nav-tabs li {
+    width: 18%;
+    margin-right: 2.5%; }
+    .preview-thumbnail.nav-tabs li img {
+      max-width: 100%;
+      display: block; }
+    .preview-thumbnail.nav-tabs li a {
+      padding: 0;
+      margin: 0; }
+    .preview-thumbnail.nav-tabs li:last-of-type {
+      margin-right: 0; }
+
+.tab-content {
+  overflow: hidden; }
+  .tab-content img {
+    width: 100%;
+    -webkit-animation-name: opacity;
+            animation-name: opacity;
+    -webkit-animation-duration: .3s;
+            animation-duration: .3s; }
+
+.card {
+  margin-top: 50px;
+  background: #eee;
+  padding: 3em;
+  line-height: 1.5em; }
+
+@media screen and (min-width: 997px) {
+  .wrapper {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex; } }
+
+.details {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column; }
+
+.colors {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1; }
+
+.product-title, .price, .sizes, .colors {
+  text-transform: UPPERCASE;
+  font-weight: bold; }
+
+.checked, .price span {
+  color: #ff9f1a; }
+
+.product-title, .rating, .product-description, .price, .vote, .sizes {
+  margin-bottom: 15px; }
+
+.product-title {
+  margin-top: 0; }
+
+.size {
+  margin-right: 10px; }
+  .size:first-of-type {
+    margin-left: 40px; }
+
+.color {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+  height: 2em;
+  width: 2em;
+  border-radius: 2px; }
+  .color:first-of-type {
+    margin-left: 20px; }
+
+.add-to-cart, .like {
+  background: #ff9f1a;
+  padding: 1.2em 1.5em;
+  border: none;
+  text-transform: UPPERCASE;
+  font-weight: bold;
+  color: #fff;
+  -webkit-transition: background .3s ease;
+          transition: background .3s ease; }
+  .add-to-cart:hover, .like:hover {
+    background: #b36800;
+    color: #fff; }
+
+.not-available {
+  text-align: center;
+  line-height: 2em; }
+  .not-available:before {
+    font-family: fontawesome;
+    content: "\f00d";
+    color: #fff; }
+
+.orange {
+  background: #ff9f1a; }
+
+.green {
+  background: #85ad00; }
+
+.blue {
+  background: #0076ad; }
+
+.tooltip-inner {
+  padding: 1.3em; }
+
+@-webkit-keyframes opacity {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(3);
+            transform: scale(3); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+@keyframes opacity {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(3);
+            transform: scale(3); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+/*# sourceMappingURL=style.css.map */
 body {
     margin: 0;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
@@ -34,6 +186,7 @@ body {
     color: #212529;
     text-align: left;
     background-color: #f0eded;
+    overflow-x: hidden;
 }
 
 .lead {
@@ -41,158 +194,129 @@ body {
    
 }
 
+
+
 .demo-trigger {
   display: inline-block;
   width: 30%;
   float: left;
 }
 
+.detail {
+  position: relative;
+  width: 65%;
+  margin-left: 5%;
+  float: left;
+  button{
+    vertical-align:middle;
+    opacity:.5;
+    cursor:unset;
+    background:$color_invert_chrome_tint;
+    margin-left:1em;
+  }
+}
+
+
 @media (max-width: 610px) {
 
-.detail, .demo-trigger {
-  float: none;
-}
+  .detail, .demo-trigger {
+    float: none;
+  }
 
-.demo-trigger {
-  display:block;
-  width: 50%;
-  max-width:200px;
-  margin: 0 auto;
-}
+  .demo-trigger {
+    display:block;
+    width: 50%;
+    max-width:200px;
+    margin: 0 auto;
+  }
+
+  .detail {
+    margin: 0;
+    width: auto;
+  }
+
+  p {
+    margin: 0 auto 1em;
+  }
+
+  .responsive-hint {
+    display: none;
+  }
+  h3 {
+    margin-top:20px;
+  }
 }
 
 </style>
-<div style="width: 100vw; display: flex;" class="body" >
-<div class="top">
-  <div style="margin-left: 30px;" class="logo"> <img  style="height: 70px; width: 70px;" src="{% static 'userapp/images/logo.png' %}"></div>
-  <div style="    padding-left: 40px;" class="home "> <a style="text-decoration: none;" href="/home/"><h4 style=" color: white; padding-top: 20px;">Home</h4> </a> </div>
-  <div class="dropdown">
-    <button class="dropbtn"style="padding-left: 40px;"><h4 style="padding-top: 7px;">Categories<i style="padding-left: 5px;;" class="fa fa-caret-down"></i></h4>
-      
-    </button>
-    <div class="dropdown-content">
-      {% for x in category_data%}
-      <a href="/category/{{x.id}}">{{x.categoryname}}</a>
-      {% endfor %}
-      
-    </div>
-  </div>
-      
-        <div class="col-md-4 col-md-offset-3">
-            <form action="" style="padding-top: 24px;" class="search-form">
-                <div class="form-group has-feedback">
-            		<label for="search" class="sr-only">Search</label>
-            		<input type="text" class="form-control" name="search" id="search" placeholder="search">
-              		<span class="glyphicon glyphicon-search form-control-feedback"></span>
-            	</div>
-            </form>
-        </div>
-  
-        <!-- <div style="padding-left: 40px;" class="login "> <h4 style="padding-top: 20px;">Login</h4></div> -->
-        <div class="dropdown">
-          <button class="dropbtn"style="padding-left: 40px;"><i style="font-size: 20px; padding-top: 19px; padding-left: 5px;" class="fas fa-user-circle"></i></h4>
-            
-          </button>
-          <div class="dropdown-content">
-            <a href="/user_profile/">My Profile</a>
-            <a href="/user_order_history/">order History</a>
-            <a href="/user_logout/">logout</a>
-            
+
+<div class="container">
+  <div class="card">
+    <div class="container-fliud">
+      <div class="wrapper row">
+        <div class="preview col-md-6">
+          
+          <div class="preview-pic tab-content">
+            <div class="tab-pane active" id="pic-1"><img class="demo-trigger" src="{{product_data.ImageURL}}" data-zoom="{{product_data.ImageURL}}"> </div>
+            <!-- <div class="tab-pane" id="pic-2"><img src="{{product_data.ImageURL}}" /></div>
+            <div class="tab-pane" id="pic-3"><img src="{{product_data.ImageURL}}" /></div>
+            <div class="tab-pane" id="pic-4"><img src="{{product_data.ImageURL}}" /></div>
+            <div class="tab-pane" id="pic-5"><img src="{{product_data.ImageURL}}" /></div> -->
           </div>
+          <!-- <ul class="preview-thumbnail nav nav-tabs">
+            <li class="active"><a data-target="#pic-1" data-toggle="tab"><img src="{{product_data.ImageURL}}" /></a></li>
+            <li><a data-target="#pic-2" data-toggle="tab"><img src="{{product_data.ImageURL}}" /></a></li>
+            <li><a data-target="#pic-3" data-toggle="tab"><img src="{{product_data.ImageURL}}" /></a></li>
+            <li><a data-target="#pic-4" data-toggle="tab"><img src="{{product_data.ImageURL}}" /></a></li>
+            <li><a data-target="#pic-5" data-toggle="tab"><img src="{{product_data.ImageURL}}" /></a></li>
+          </ul> -->
           
         </div>
-        <div><h4 style=" padding-top: 35px; font-size: 15px; justify-content: space-between;" > Hi,{{user.username}} </h4> </div>
-
-        <div><a href="/show_cart/"><i style=" padding-left: 5rem; padding-top: 35px; font-size: 15px; justify-content: space-between;" class="cart fas fa-shopping-cart"></i></a></div>
-        <span style="margin-top: 18px; margin-bottom: 35px;padding-top: 4px;" class="badge badge-danger">{{no}}</span>
-
-        </div>
-</div>
-
-<!--Main layout-->
-<main class="mt-5 pt-4">
-    <div class="container dark-grey-text mt-5">
-
-      <!--Grid row-->
-      <div style="box-shadow: 3px 3px 4px 3px rgba(0,0,0,0.2);" class="row wow fadeIn">
-
-        <!--Grid column-->
-        <div class="col-md-6 mb-4">
-
-          <!-- <img src="{{product_data.ImageURL}}" class="img-fluid" alt=""> -->
-          <img class="demo-trigger" src="{{product_data.ImageURL}}?w=200&ch=DPR&dpr=2&border=1,ddd" data-zoom="{{product_data.ImageURL}}?w=1000&ch=DPR&dpr=2">
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-md-6 mb-4">
-
-          <!--Content-->
-          <div class="detail p-4">
-
-            <div class="mb-3">
-             <h3 style="font-size: 2.5rem;">{{product_data.productname}}</h3>
+        <div class="details col-md-6">
+          <h3 class="product-title">{{product_data.productname}}</h3>
+          <div class="rating">
+            <div class="stars">
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star"></span>
+              <span class="fa fa-star"></span>
             </div>
-
-            <p class="lead">
-              <span class="mr-1">
-                <del>2000₹</del>
-              </span>
-              <span>{{product_data.price}}₹</span>
-            </p>
-
-            <p class="lead font-weight-bold">Description</p>
-
-            <p>{{product_data.productdesc}}</p>
-
-            <form class="d-flex justify-content-left">
-              <!-- Default input -->
-              <!-- <input type="number" value="1" aria-label="Search" class="form-control" style="width: 100px"> -->
-              <a href="/user_cart/{{product_data.id}}"><button style="font-size: 15px;margin-left: 10px;" class="btn btn-primary btn-md my-0 p" type="button">Add to cart
-                <i class="fas fa-shopping-cart ml-1"></i>
-              </button></a>
-
-            </form>
-
+            <span class="review-no">41 reviews</span>
           </div>
-          <!--Content-->
-
+          <p class="product-description">{{product_data.productdesc}}</p>
+          <h4 class="price">current price: <span>₹{{product_data.price}}</span></h4>
+          <p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
+          <!-- <h5 class="sizes">sizes:
+            <span class="size" data-toggle="tooltip" title="small">s</span>
+            <span class="size" data-toggle="tooltip" title="medium">m</span>
+            <span class="size" data-toggle="tooltip" title="large">l</span>
+            <span class="size" data-toggle="tooltip" title="xtra large">xl</span>
+          </h5> -->
+          <!-- <h5 class="colors">colors:
+            <span class="color orange not-available" data-toggle="tooltip" title="Not In store"></span>
+            <span class="color green"></span>
+            <span class="color blue"></span>
+          </h5> -->
+          <div class="action">
+            <a href="/user_cart/{{product_data.id}}"><button class="add-to-cart btn btn-default" type="button">add to cart</button></a>
+            <button class="like btn btn-default" type="button"><span class="fa fa-heart"></span></button>
+          </div>
         </div>
-        <!--Grid column-->
-
       </div>
-      <!--Grid row-->
-
-
-
+    </div>
+  </div>
+</div>
 <script
-  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-  integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-  crossorigin="anonymous"
-></script>
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
-<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/164071/Drift.min.js"></script>
-      <script>
-    var demoTrigger = document.querySelector('.demo-trigger');
-var paneContainer = document.querySelector('.detail');
+  <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/164071/Drift.min.js"></script>
+  <script>
+  var demoTrigger = document.querySelector('.demo-trigger');
+var paneContainer = document.querySelector('.details');
 
 new Drift(demoTrigger, {
   paneContainer: paneContainer,
   inlinePane: false,
 });
 </script>
-
-</body>
-
-</html>
+{%endblock%}

@@ -53,7 +53,7 @@
                         <td>
                            <a href="/edit_user/{{x.id}}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
                             <a href="/delete_user/{{x.id}}" class="delete" title="Delete" data-toggle="tooltip"><i Onclick= "return confirm('Are you sure you want to delete {{x.first_name}} ?')" class="material-icons ">&#xE872;</i></a>
-                            <a href="/block_user/{{x.id}}" id="block" class="block" title="Block" data-toggle="tooltip"><i style="color: red;" Onclick= "block()" class="fas fa-ban" ></i></a>
+                            <a href="/block_user/{{x.id}}" id="block" class="block" title="Block" data-toggle="tooltip"><i style="color: red;" Onclick= "return confirm('Are you sure you want to continue?')" class="fas fa-ban" ></i></a>
 
                         </td>
                     </tr>
@@ -89,7 +89,7 @@
     
  } );
  function block(){
-    return confirm('Are you sure you want to Block {{x.first_name}} ?')
+    return confirm('Are you sure you want to continue {{x.first_name}} ?')
          console.log('clicked')
      }
     </script>

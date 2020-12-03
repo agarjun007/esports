@@ -1,38 +1,17 @@
 {% extends 'commerce/base_admin.html'%} 
 
-{%block title%} Reports {%endblock%}
+{%block title%} Orders {%endblock%}
 {%block head%} {%endblock%}
 
 
 {% block content%}
-<form method="POST" action="/adminpanel_reports/">
-    {% csrf_token %}
-    <label for="report">Select a Date:</label>
-    <input type="date" id="from" name="from" required>
-    <input type="date" id="to" name="to" required>
-    <button name="date_report" class="btn-success" type="submit">Show Report</button>
-  </form>
-
-  <form method="POST" action="">
-    {% csrf_token %}
-    <label for="category">Report</label>
-
-<select name="report_type" id="report_type">
-  <option value="this_day">This day</option>
-  <option value="last_7_days">last 7 days</option>
-  <option value="this_month">This Month</option>
-  <option value="annual">Annual</option>
-</select>
-    <button name="category_report" class="btn-success" type="submit">Show Report</button>
-  </form>
- 
 <div class="container-xl">
   <div class="table-responsive">
    
       <div class="table-wrapper">
           <div class="table-title">
               <div class="row">
-                  <div class="col-sm-8"><h2>{{heading}}&nbsp;<b>Sales</b> <b>Report</b></h2></div>
+                  <div class="col-sm-8"><h2>{{heading}} &nbsp; Order <b>Details</b></h2></div>
                   
               </div>
           </div>
@@ -40,23 +19,36 @@
               <thead>
                   <tr>
                       <th>No</th>   
-                      <th>Ordered Date</th>                   
-                      <th>Total Orders </th>
-                      <th>Total products sold</th>
-                      <th>Order Price</th>
-                      
+                      <th>Transaction ID</th>                   
+                      <th>Name </th>
+                      <th>Address</th>
+                      <th>Ordered date</th>         
+                      <th>Payment mode</th>
+                      <th>payment status</th>
+                      <th>Order status</th>
+                      <th>Total Price</th>
+                      <th>Actions</th>
                       
                   </tr>
               </thead>
               <tbody>
-              {% for date,order in table_data.items %}
+              {% for id, order in table_data.items %}
                   <tr>
                       <td>{{forloop.counter}}</td>
-                      <td>{{date}}</td>
-                      <td>{{order.order_count}}</td>
-                      <td>{{order.total_products}}</td>
-                      <td>{{order.price}}</td>
-                      
+                    
+                      <td>{{id}}</td>
+                      <td>{{order.address.name}}</td>
+                      <td>{{order.address.address }} {{order.address.city}} {{order.address.state}} {{order.address.pincode}}</td>
+                      <td>{{order.tdate}}</td>                      
+                      <td>{{order.payment_mode}}</td>
+                      <td>{{order.payment_status}}</td>
+                      <td>{{order.order_status}}</td> 
+                     <td>{{order.orderprice}}</td>
+                      <td>
+                          <a href="/confirm_order/{{order.tid}}" class="confirm" title="confirm" data-toggle="tooltip"><i Onclick= "return confirm('Are you sure you want to confirm order of transaction id:{{id}} ?')"style="color: green;" class="fas fa-check-circle"></i></a>
+                          <a href="/cancel_order/{{order.tid}}" class="cancel" title="Cancel" data-toggle="tooltip"><i Onclick= "return confirm('Are you sure you want to cancel order of transaction id:{{id}} ?')" style="color: red;" class="fas fa-window-close"></i></a>
+                        </td>
+                       
                   </tr>
                      {% endfor %}  
               </tbody>
@@ -65,7 +57,6 @@
       </div>
   </div>  
 </div>  
-
 
 {% endblock %} 
 

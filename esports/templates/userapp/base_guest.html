@@ -25,7 +25,7 @@
 <body>
 <style>
 </style>
-<div style="width: 100vw;height: 100%; background-color: #f0eded;" class="body" >
+<div style="width: 100vw;height: 100%;     background: #e6e5e5" class="body" >
 <div class="top">
   <div style="margin-left: 30px;" class="logo"> <img  style="height: 70px; width: 70px;" src="{% static 'userapp/images/logo.png' %}"></div>
   <div style="    padding-left: 40px;" class="home "><a style="text-decoration: none;" href="/"> <h4 style=" color: white; padding-top: 20px;">Home</h4> </a> </div>
@@ -46,13 +46,16 @@
   
         <!-- <div style="padding-left: 40px;" class="login "> <h4 style="padding-top: 20px;">Login</h4></div> -->
         {% block account %}{% endblock %}
-        <div><h4 style=" padding-top: 35px; font-size: 15px; justify-content: space-between;" > Hi,{{user.username}} </h4> </div>
+        <div><h4 style=" padding-top: 35px; font-size: 15px; justify-content: space-between;" > Hi&nbsp;{{guest}} {{user.username}} </h4> </div>
 
         <div><a href="/show_cart/"><i style="padding-left: 5rem; padding-top: 33px; font-size: 15px;" class="cart fas fa-shopping-cart"></i></a></div>
         <span style="margin-top: 18px; margin-bottom: 35px;padding-top: 4px;" class="badge badge-danger">{{no}}</span>
 
 
         </div>
+{% block carousel%} {%endblock%}
+        
+        
 {% block content %}
 {%endblock%}
 
@@ -60,6 +63,104 @@
         
 
 </div>
+<!-- Footer -->
+<footer class="page-footer font-small unique-color-dark " style="font-size: medium; color: white;    background: black;">
+
+
+
+  <!-- Footer Links -->
+  <div class="container text-center text-md-left mt-5">
+
+    <!-- Grid row -->
+    <div class="row mt-3">
+
+      <!-- Grid column -->
+      <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+
+        <!-- Content -->
+        <h3 class="text-uppercase font-weight-bold">E-sports</h3>
+        <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+        <p>This is an ecommerce webapp designed for a sports shop .</p>
+
+      </div>
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <!-- <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4"> -->
+
+        <!-- Links -->
+        <!-- <h6 class="text-uppercase font-weight-bold">Products</h6>
+        <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+        <p>
+          <a href="#!">MDBootstrap</a>
+        </p>
+        <p>
+          <a href="#!">MDWordPress</a>
+        </p>
+        <p>
+          <a href="#!">BrandFlow</a>
+        </p>
+        <p>
+          <a href="#!">Bootstrap Angular</a>
+        </p>
+
+      </div> -->
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <!-- <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4"> -->
+
+        <!-- Links -->
+        <!-- <h6 class="text-uppercase font-weight-bold">Useful links</h6>
+        <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+        <p>
+          <a href="#!">Your Account</a>
+        </p>
+        <p>
+          <a href="#!">Become an Affiliate</a>
+        </p>
+        <p>
+          <a href="#!">Shipping Rates</a>
+        </p>
+        <p>
+          <a href="#!">Help</a>
+        </p>
+
+      </div> -->
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+
+        <!-- Links -->
+        <h3 class="text-uppercase font-weight-bold">Contact</h3>
+        <hr class="deep-purple accent-2 mb-4 mt-0 d-inline-block mx-auto" style="width: 60px;">
+        <p>
+          <i class="fas fa-home mr-3"></i> Neyyattinkara, Trivandrum,Kerala</p>
+        <p>
+          <i class="fas fa-envelope mr-3"></i> agarjun007@gmail.com</p>
+        <p>
+          <i class="fas fa-phone mr-3"></i> +91 8281424860</p>
+        <p>
+          <i class="fas fa-print mr-3"></i> +91 7994557244</p>
+
+      </div>
+      <!-- Grid column -->
+
+    </div>
+    <!-- Grid row -->
+
+  </div>
+  <!-- Footer Links -->
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">© 2020 Copyright:
+    <a href="https://agarjun007.github.io/personal_website/"> ARJUN.A.G</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
 <script
   src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
   integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

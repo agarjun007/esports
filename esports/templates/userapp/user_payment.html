@@ -245,7 +245,7 @@ paypal_sdk.Buttons({
           success: function( data  ){
             if (data == 'success'){
 
-              window.location.replace("/show_cart")
+              window.location.replace("/")
             }
 
           }
@@ -310,7 +310,7 @@ crossorigin="anonymous"
           dataType : "json",
           success: function( data ){
             if(data.mode == 'COD')
-              window.location.replace("/show_cart")
+              window.location.replace("/")
             else if(data.mode == 'Paypal'){
               console.log(data)
               $('#order').hide()
@@ -383,7 +383,7 @@ crossorigin="anonymous"
           success: function( data  ){
             if (data == 'success'){
 
-              window.location.replace("/show_cart")
+              window.location.replace("/")
             }
 
           }

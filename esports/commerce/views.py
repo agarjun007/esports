@@ -12,7 +12,6 @@ from PIL import Image
 from django.core.files import File
 from datetime import date,datetime,timedelta
 
-# Create your views here.
 def adminlogin(request):
     if request.session.has_key('password'):
         return redirect(adminpanel)
@@ -20,7 +19,6 @@ def adminlogin(request):
         
         username = request.POST['username']
         password = request.POST['password']
-        print(username)
         if username == 'admin' and password == 'admin':
             request.session['password'] = password
             table = User.objects.all()
@@ -42,16 +40,12 @@ def adminpanel(request):
         for order in order:
             if not order.tid in dict.keys():
                 dict[order.tid]=order
-                
-        print(len(dict))
         length_order = len(dict)
         length_user =len(table)
         length_product =len(product)
         labels = []
         data = []
-        data=[length_product,length_user,length_order]
-        # print(label)
-        print(data)    
+        data=[length_product,length_user,length_order]  
         return render(request,'commerce/admin_panel.html',{'table_data':table,'length_user':length_user,'length_product':length_product,'length_order':length_order,'data': data})
     else:
         return redirect(adminlogin)
@@ -68,10 +62,7 @@ def adminpanel_category(request):
         table = Category.objects.all()
         for category in table:
             totalitems =  products.objects.filter(category=category)
-            category.productcount = totalitems.count()
-            
-            # dict[category] = productcount
-       
+            category.productcount = totalitems.count()       
         return render(request,'commerce/adminpanel_category.html',{'table_data': table})
     else:
         return redirect(adminlogin)    
@@ -79,7 +70,6 @@ def adminpanel_category(request):
 def createcategory(request):
     if request.session.has_key('password'):
         if request.method == 'POST':
-        
             categoryname = request.POST['categoryname']
             category = Category.objects.create(categoryname=categoryname)
             category.save();            
@@ -117,8 +107,6 @@ def deletecategory(request,id):
     else:
        return redirect(adminlogin)              
 
-
-
 def adminpanel_products(request):
     if request.session.has_key('password'):
         table = products.objects.all()
@@ -135,7 +123,6 @@ def createproducts(request):
             price = request.POST['price']
             quantity = request.POST['quantity']
             unit = request.POST['unit']
-            # productimage = request.FILES.get('productimage')
             image_data = request.POST['pro_img']
             format, imgstr = image_data.split(';base64,')
             ext = format.split('/')[-1]
@@ -167,7 +154,6 @@ def updateproducts(request,id):
             price = request.POST['price']
             quantity = request.POST['quantity']
             unit = request.POST['unit']
-            # productimage = request.POST['productimage']
             product = products.objects.get(id=id)
             product.productname = productname
             product.category.categoryname = category.categoryname
@@ -175,7 +161,6 @@ def updateproducts(request,id):
             product.price = price
             product.Quantity = quantity
             product.unit = unit
-            # product.productimage = productimage
             if 'productimage' not in request.POST:
                 print('notinpost')
                 productimage = request.FILES.get('productimage')
@@ -212,19 +197,14 @@ def createuser(request):
             mobile = request.POST['mobile']
        
             if password1 == password2:
-                if User.objects.filter(username=username).exists():
-                # return JsonResponse('usernamemismatch',safe=False)
-                
+                if User.objects.filter(username=username).exists():              
                     return redirect('/create_user')
                 else: 
                     user = User.objects.create_user(first_name=name,username=username,email=email,password = password1,last_name = mobile)
                     user.save();
                 messages.info(request, "User created successfully..")  
                 return redirect('/adminpanel')  
-                # return JsonResponse('valid', safe=False)       
             else:
-                # return JsonResponse('invalid', safe=False)
-                # messages.info(request,"password not match")
                 return redirect('/create_user')
         else:
             return render(request,'commerce/create_user.html')        
@@ -247,12 +227,9 @@ def updateuser(request,id):
             user.username = username
             user.email = email
             user.last_name = mobile
-            
             user.save()
-        
             return redirect(adminpanel)
         else:
-        
             return render(request,'commerce/edit_user.html')
     else:
         return redirect(adminlogin)           
@@ -280,7 +257,7 @@ def deleteuser(request,id):
 
 def adminpanel_orders(request):
     if request.session.has_key('password'):
-        orders = Order.objects.all()
+        orders = Order.objects.filter(order_status='pending')
         grandtotal = 0
         dict = {}
         for order in orders:
@@ -289,10 +266,34 @@ def adminpanel_orders(request):
                 dict[order.tid].orderprice = order.totalprice
             else:
                 dict[order.tid].orderprice += order.totalprice
-        print(len(dict))
         return render(request,'commerce/adminpanel_orders.html',{'table_data': dict})
     else:
         return redirect(adminlogin) 
+
+def adminpanel_suborders(request,status):
+    if status == 'Confirmed':
+        orders = Order.objects.filter(order_status=status)               
+        dict = {}           
+        for order in orders:
+            if not order.tid in dict.keys():
+                dict[order.tid]=order
+                dict[order.tid].orderprice = order.totalprice
+            else:
+                dict[order.tid].orderprice += order.totalprice
+        
+        return render(request,'commerce/adminpanel_suborders.html',{'table_data': dict,'heading':status}) 
+
+    elif status == 'Cancelled':
+        orders = Order.objects.filter(order_status=status)              
+        dict = {}           
+        for order in orders:
+            if not order.tid in dict.keys():
+                dict[order.tid]=order
+                dict[order.tid].orderprice = order.totalprice
+            else:
+                dict[order.tid].orderprice += order.totalprice        
+        return render(request,'commerce/adminpanel_suborders.html',{'table_data': dict,'heading':status}) 
+                
 
 def cancel_order(request,tid):
     if request.session.has_key('password'):
@@ -317,7 +318,6 @@ def confirm_order(request,tid):
 def adminpanel_reports(request):
     if request.session.has_key('password'):
         if request.method == 'POST':
-            report_mode = 1
             if 'date_report' in request.POST:                
                 from_date = request.POST['from']
                 to_date = request.POST['to']
@@ -328,61 +328,94 @@ def adminpanel_reports(request):
                     if not order.tid in dict.keys():
                         dict[order.tid]=order
                         dict[order.tid].orderprice = order.totalprice
+                        dict[order.tid].total_products = 1
                     else:
                         dict[order.tid].orderprice += order.totalprice
-                        
-                return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode})
+                        dict[order.tid].total_products += 1
+                dict1 = {}
+                for x,y in dict.items():
+                    if not y.tdate in dict1.keys():
+                        dict1[y.tdate] = {"order_count" : 1, "price": y.orderprice, "total_products":y.total_products}
+                    else:
+                        dict1[y.tdate]["order_count"] += 1
+                        dict1[y.tdate]["price"] += y.orderprice
+                        dict1[y.tdate]["total_products"] += y.total_products
+                return render(request,'commerce/adminpanel_reports.html',{'table_data': dict1})
             elif 'category_report' in request.POST:
                 report_type = request.POST['report_type']
                 if report_type == 'this_day':
-                    print(report_type)
+                    heading = 'Today'
                     today_date = date.today()
                     orders = Order.objects.filter(tdate=today_date)
                     dict = {}           
                     for order in orders:
                         if not order.tid in dict.keys():
                             dict[order.tid]=order
+                            dict[order.tid].total_products = 1
                             dict[order.tid].orderprice = order.totalprice
                         else:
+                            dict[order.tid].total_products += 1
                             dict[order.tid].orderprice += order.totalprice
-                            
-                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':'Today'})
-
+                    dict1 = {}
+                    for x,y in dict.items():
+                        if not y.tdate in dict1.keys():
+                            dict1[y.tdate] = {"order_count" : 1, "price": y.orderprice, "total_products":y.total_products}
+                        else:
+                            dict1[y.tdate]["order_count"] += 1
+                            dict1[y.tdate]["price"] += y.orderprice
+                            dict1[y.tdate]["total_products"] += y.total_products
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict1,'heading':heading})
+        
                 elif report_type == 'last_7_days':
-                    print(report_type) 
+                    heading = 'Last 7 days'
                     today = date.today()
                     lastweek_from = today - timedelta(days=7)
-                    print(lastweek_from)
                     orders = Order.objects.filter(tdate__range=[lastweek_from, today])
-                    print(lastweek_from,today)
                     dict = {}           
                     for order in orders:
                         if not order.tid in dict.keys():
                             dict[order.tid]=order
+                            dict[order.tid].total_products = 1
                             dict[order.tid].orderprice = order.totalprice
                         else:
+                            dict[order.tid].total_products += 1
                             dict[order.tid].orderprice += order.totalprice
-                            
-                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':'Previous Week'})
+                    dict1 = {}
+                    for x,y in dict.items():
+                        if not y.tdate in dict1.keys():
+                            dict1[y.tdate] = {"order_count" : 1, "price": y.orderprice, "total_products":y.total_products}
+                        else:
+                            dict1[y.tdate]["order_count"] += 1
+                            dict1[y.tdate]["price"] += y.orderprice
+                            dict1[y.tdate]["total_products"] += y.total_products
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict1,'heading':heading})
+        
 
                 elif report_type == 'this_month':
-                    print(report_type)  
                     today_date = date.today()
-                    # month = today_date.month
                     month = today_date.strftime('%B')
                     orders = Order.objects.filter(tdate__month=today_date.month)
                     dict = {}           
                     for order in orders:
                         if not order.tid in dict.keys():
                             dict[order.tid]=order
+                            dict[order.tid].total_products = 1
                             dict[order.tid].orderprice = order.totalprice
                         else:
+                            dict[order.tid].total_products += 1
                             dict[order.tid].orderprice += order.totalprice
-                            
-                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':month})
+                    dict1 = {}
+                    for x,y in dict.items():
+                        if not y.tdate in dict1.keys():
+                            dict1[y.tdate] = {"order_count" : 1, "price": y.orderprice, "total_products":y.total_products}
+                        else:
+                            dict1[y.tdate]["order_count"] += 1
+                            dict1[y.tdate]["price"] += y.orderprice
+                            dict1[y.tdate]["total_products"] += y.total_products
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict1,'heading':month})
+        
 
                 elif report_type == 'annual':
-                    print(report_type)     
                     today_date = date.today()
                     year =today_date.year
                     orders = Order.objects.filter(tdate__year=today_date.year)
@@ -390,14 +423,42 @@ def adminpanel_reports(request):
                     for order in orders:
                         if not order.tid in dict.keys():
                             dict[order.tid]=order
+                            dict[order.tid].total_products = 1
                             dict[order.tid].orderprice = order.totalprice
                         else:
+                            dict[order.tid].total_products += 1
                             dict[order.tid].orderprice += order.totalprice
-                            
-                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict,'report_mode':report_mode,'heading':year})
-
+                    dict1 = {}
+                    for x,y in dict.items():
+                        if not y.tdate in dict1.keys():
+                            dict1[y.tdate] = {"order_count" : 1, "price": y.orderprice, "total_products":y.total_products}
+                        else:
+                            dict1[y.tdate]["order_count"] += 1
+                            dict1[y.tdate]["price"] += y.orderprice
+                            dict1[y.tdate]["total_products"] += y.total_products
+                    return render(request,'commerce/adminpanel_reports.html',{'table_data': dict1,'heading':year})
         else:
-            return render(request,'commerce/adminpanel_reports.html')
+            heading = 'Today'
+            today_date = date.today()
+            orders = Order.objects.filter(tdate=today_date)
+            dict = {}
+            for order in orders:
+                if not order.tid in dict.keys():
+                        dict[order.tid]=order
+                        dict[order.tid].total_products = 1
+                        dict[order.tid].orderprice = order.totalprice
+                else:
+                    dict[order.tid].total_products += 1
+                    dict[order.tid].orderprice += order.totalprice
+            dict1 = {}
+            for x,y in dict.items():
+                if not y.tdate in dict1.keys():
+                    dict1[y.tdate] = {"order_count" : 1, "price": y.orderprice, "total_products":y.total_products}
+                else:
+                    dict1[y.tdate]["order_count"] += 1
+                    dict1[y.tdate]["price"] += y.orderprice
+                    dict1[y.tdate]["total_products"] += y.total_products
+            return render(request,'commerce/adminpanel_reports.html',{'table_data': dict1,'heading':heading})
     else:
         return redirect(adminlogin)
 
@@ -415,7 +476,7 @@ def adminpanel_subreports(request,status):
         return render(request,'commerce/adminpanel_subreports.html',{'table_data': dict,'heading':status}) 
 
     elif status == 'Cancelled':
-        orders = Order.objects.filter(order_status=status)               
+        orders = Order.objects.filter(order_status=status)              
         dict = {}           
         for order in orders:
             if not order.tid in dict.keys():
