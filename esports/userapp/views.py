@@ -1,10 +1,10 @@
-from django.shortcuts import render,redirect
-from django.contrib.auth.models import User,auth
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User, auth
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.http import JsonResponse
-from django.http import HttpResponse 
+from django.http import HttpResponse
 import datetime
 from commerce.models import *
 from .models import *
@@ -14,10 +14,11 @@ from django.core.files import File
 import razorpay
 import requests
 import json
-  
-def usersignup(request):
+
+
+def user_signup(request):
     if request.user.is_authenticated:
-        return redirect(userhome)
+        return redirect(user_home)
     if request.method == 'POST':
         name = request.POST['name']
         username = request.POST['username']
@@ -25,296 +26,316 @@ def usersignup(request):
         password1 = request.POST['password1']
         password2 = request.POST['password2']
         mobile = request.POST['mobile']
-       
+
         if password1 == password2:
             if User.objects.filter(username=username).exists():
-                return JsonResponse('usernamemismatch',safe=False)
-            else: 
-                user = User.objects.create_user(first_name=name,username=username,email=email,password = password1,last_name = mobile, is_active =True)               
+                return JsonResponse('usernamemismatch', safe=False)
+            else:
+                user = User.objects.create_user(first_name=name, username=username, email=email, password=password1,
+                                                last_name=mobile, is_active=True)
                 user.save();
-            messages.info(request, "User created successfully..")  
-            return JsonResponse('valid', safe=False)       
+            messages.info(request, "User created successfully..")
+            return JsonResponse('valid', safe=False)
         else:
             return JsonResponse('invalid', safe=False)
-            messages.info(request,"password not match")
-    else:    
-        return render(request,'userapp/signup.html')   
+            messages.info(request, "password not match")
+    else:
+        return render(request, 'userapp/signup.html')
 
-def usersignin(request):
+
+def user_signin(request):
     if request.user.is_authenticated:
-        return redirect(userhome)
+        return redirect(user_home)
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user =User.objects.filter(username=username).first()
+        user = User.objects.filter(username=username).first()
 
         if user is not None and check_password(password, user.password):
             if user.is_active == False:
                 return JsonResponse('blocked', safe=False)
             else:
-                auth.login(request,user)
+                auth.login(request, user)
                 return JsonResponse('valid', safe=False)
         else:
             return JsonResponse('invalid', safe=False)
     else:
-        
-        return render(request,'userapp/user_signin.html')
 
-def otplogin(request):
-    if  request.method == 'POST':
+        return render(request, 'userapp/user_signin.html')
+
+
+def otp_login(request):
+    if request.method == 'POST':
         mobile = request.POST['mobile']
         if User.objects.filter(last_name=mobile).exists():
             user = User.objects.get(last_name=mobile)
-            if user.is_active == True:
+            if user.is_active:
                 mobile = str(91) + mobile
                 request.session['mobile'] = mobile
                 url = "https://d7networks.com/api/verifier/send"
 
                 payload = {'mobile': mobile,
-                'sender_id': 'SMSINFO',
-                'message': 'Your otp code is {code}',
-                'expiry': '9000'}
+                           'sender_id': 'SMSINFO',
+                           'message': 'Your otp code is {code}',
+                           'expiry': '9000'}
                 files = [
 
                 ]
                 headers = {
-                'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
+                    'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
                 }
 
-                response = requests.request("POST", url, headers=headers, data = payload, files = files)
+                response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
                 print(response.text.encode('utf8'))
-                data=response.text.encode('utf8')
-                datadict=json.loads(data.decode('utf-8'))
+                data = response.text.encode('utf8')
+                otp_data = json.loads(data.decode('utf-8'))
 
-                id=datadict['otp_id']
-                # status=datadict['status']
-                print('id:',id)
-                request.session['id'] = id
+                otp_id = otp_data['otp_id']
+                request.session['id'] = otp_id
 
-                return JsonResponse('valid',safe=False)
+                return JsonResponse('valid', safe=False)
             else:
-                return JsonResponse('blocked',safe=False)    
+                return JsonResponse('blocked', safe=False)
 
         else:
-            return JsonResponse('invalid',safe=False)    
-    else:    
-        otpfield =0
-        return render(request,'userapp/otp_signin.html',{'otpfield':otpfield})       
-   
-def verifyotp(request):
+            return JsonResponse('invalid', safe=False)
+    else:
+        otpfield = 0
+        return render(request, 'userapp/otp_signin.html', {'otpfield': otpfield})
+
+
+def verify_otp(request):
     if request.session.has_key('id'):
         if request.method == 'POST':
             otp = request.POST['otp']
-            otp_id = request.session['id']  
+            otp_id = request.session['id']
 
             url = "https://d7networks.com/api/verifier/verify"
 
             payload = {'otp_id': otp_id,
-            'otp_code': otp}
+                       'otp_code': otp}
             files = [
 
             ]
             headers = {
-            'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
+                'Authorization': 'Token 4dc831ffc708d93a7287b8846ab5034db634afe0'
             }
 
-            response = requests.request("POST", url, headers=headers, data = payload, files = files)
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
-            data=response.text.encode('utf8')
-            datadict=json.loads(data.decode('utf-8'))
-            status=datadict['status']
+            data = response.text.encode('utf8')
+            otp_data = json.loads(data.decode('utf-8'))
+            status = otp_data['status']
 
-            if status=='success':
+            if status == 'success':
                 mobile = request.session['mobile']
-                newmobile = str(mobile)
-                newmobile =newmobile[-10:]
-                user =User.objects.filter(last_name=newmobile).first()
-                if user is not None :
+                mobile_number = str(mobile)
+                mobile_number = mobile_number[-10:]
+                user = User.objects.filter(last_name=mobile_number).first()
+                if user is not None:
                     if user.is_active == False:
                         del request.session['id']
                         return JsonResponse('blocked', safe=False)
                     else:
-                        auth.login(request,user)
+                        auth.login(request, user)
                         return JsonResponse('valid', safe=False)
                 else:
                     del request.session['id']
                     return JsonResponse('invalid', safe=False)
-            
-            else:
-                del request.session['id']                
-                return JsonResponse('otp_mismatch', safe=False)
-                
-        else:
-            otpfield =1
-            return render(request,'userapp/otp_signin.html',{'otpfield':otpfield})   
-    else:
-        return redirect(usersignin)  
 
-def userhome(request):   
+            else:
+                del request.session['id']
+                return JsonResponse('otp_mismatch', safe=False)
+
+        else:
+            otpfield = 1
+            return render(request, 'userapp/otp_signin.html', {'otpfield': otpfield})
+    else:
+        return redirect(user_signin)
+
+
+def user_home(request):
     if request.user.is_authenticated:
         product = products.objects.all()
         category = Category.objects.all()
         user = request.user
-        cart = Cart.objects.filter(user= user)
+        cart = Cart.objects.filter(user=user)
         item_count = cart.count()
-        return render(request,'userapp/user_home.html',{'product_data':product,'category_data':category,'no':item_count})
+        return render(request, 'userapp/user_home.html',
+                      {'product_data': product, 'category_data': category, 'no': item_count})
     else:
-        return redirect(usersignin)  
+        return redirect(user_signin)
 
-def userprofile(request):
+
+def user_profile(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            category = Category.objects.all()
             user = request.user
-            cart = Cart.objects.filter(user= user)
-            item_count = cart.count()  
+            cart = Cart.objects.filter(user=user)
             user.first_name = request.POST['name']
             user.last_name = request.POST['mobile']
             user.email = request.POST['email']
             user.save()
-                        
+
             if Userprofile.objects.filter(user=user).exists():
-                userdetails = Userprofile.objects.get(user=user)
+                user_details = Userprofile.objects.get(user=user)
 
                 if 'profile-image-upload' not in request.POST:
-                    profilepic = request.FILES.get('profile-image-upload')
+                    profile_pic = request.FILES.get('profile-image-upload')
                 else:
-                    profilepic = userdetails.profilepic
+                    profile_pic = user_details.profilepic
 
-                userdetails.profilepic = profilepic
-                userdetails.save()    
-            else: 
-                profilepic = request.FILES.get('profile-image-upload')
-                Userprofile.objects.create(user = user, profilepic = profilepic)
-            
-            return redirect(userhome)
-        else:        
+                user_details.profilepic = profile_pic
+                user_details.save()
+            else:
+                profile_pic = request.FILES.get('profile-image-upload')
+                Userprofile.objects.create(user=user, profilepic=profile_pic)
+
+            return redirect(user_home)
+        else:
             category = Category.objects.all()
             user = request.user
-            cart = Cart.objects.filter(user= user)
-            item_count = cart.count() 
+            cart = Cart.objects.filter(user=user)
+            item_count = cart.count()
             if Userprofile.objects.filter(user=user).exists():
-                userdetails = Userprofile.objects.get(user=user)
-                return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count,'userdetails':userdetails})
+                user_details = Userprofile.objects.get(user=user)
+                return render(request, 'userapp/user_profile.html',
+                              {'category_data': category, 'no': item_count, 'userdetails': user_details})
             else:
-                
-                return render(request,'userapp/user_profile.html',{'category_data':category,'no':item_count})
-    else:
-        return redirect(usersignin)      
 
-def category(request,id):
-    product= products.objects.filter(category=id)    
+                return render(request, 'userapp/user_profile.html', {'category_data': category, 'no': item_count})
+    else:
+        return redirect(user_signin)
+
+
+def category(request, id):
+    product = products.objects.filter(category=id)
     category = Category.objects.all()
     if request.user.is_authenticated:
         user = request.user
-        cart = Cart.objects.filter(user= user)
+        cart = Cart.objects.filter(user=user)
         item_count = cart.count()
-        return render(request,'userapp/user_home.html',{'product_data':product,'category_data':category,'no':item_count})
-    else:    
-        return render(request,'userapp/guest_home.html',{'product_data':product,'category_data':category})          
+        return render(request, 'userapp/user_home.html',
+                      {'product_data': product, 'category_data': category, 'no': item_count})
+    else:
+        return render(request, 'userapp/guest_home.html', {'product_data': product, 'category_data': category})
 
-def guesthome(request):
+
+def guest_home(request):
     if request.user.is_authenticated:
-        return redirect(userhome)
+        return redirect(user_home)
     product = products.objects.all()
     category = Category.objects.all()
 
-    return render(request,'userapp/guest_home.html',{'product_data':product,'category_data':category,'guest':'Guest'})
-           
-def productview(request,id):
+    return render(request, 'userapp/guest_home.html',
+                  {'product_data': product, 'category_data': category, 'guest': 'Guest'})
+
+
+def product_view(request, id):
     if request.user.is_authenticated:
         user = request.user
-        cart = Cart.objects.filter(user= user)
+        cart = Cart.objects.filter(user=user)
         item_count = cart.count()
         category = Category.objects.all()
         product = products.objects.get(id=id)
-        return render(request,'userapp/user_product_view.html',{'product_data':product,'category_data':category,'no':item_count})
+        return render(request, 'userapp/user_product_view.html',
+                      {'product_data': product, 'category_data': category, 'no': item_count})
     else:
         category = Category.objects.all()
         product = products.objects.get(id=id)
-        return render(request,'userapp/guest_product_view.html',{'product_data':product,'category_data':category,'guest':'Guest'})
- 
-def showcart(request): 
+        return render(request, 'userapp/guest_product_view.html',
+                      {'product_data': product, 'category_data': category, 'guest': 'Guest'})
+
+
+def show_cart(request):
     if request.user.is_authenticated:
         user = request.user
-        cart = Cart.objects.filter(user= user)
+        cart = Cart.objects.filter(user=user)
         grandtotal = 0
         for item in cart:
-            item.totalprice = item.quantity*item.product.price
+            item.totalprice = item.quantity * item.product.price
             grandtotal = grandtotal + item.totalprice
-        category= Category.objects.all()
+        category = Category.objects.all()
         item_count = cart.count()
         if item_count == 0:
-            return render(request,'userapp/user_cart.html',{'category_data':category,'no':item_count}) 
+            return render(request, 'userapp/user_cart.html', {'category_data': category, 'no': item_count})
         else:
-            return render(request,'userapp/user_cart.html',{'cart_data': cart,'category_data':category,'no':item_count,'grandtotal':grandtotal}) 
-        
-    else:
-        return redirect(usersignin)
+            return render(request, 'userapp/user_cart.html',
+                          {'cart_data': cart, 'category_data': category, 'no': item_count, 'grandtotal': grandtotal})
 
-def deleteitem(request,id): 
-    if request.user.is_authenticated:        
+    else:
+        return redirect(user_signin)
+
+
+def delete_item(request, id):
+    if request.user.is_authenticated:
         cart = Cart.objects.filter(id=id)
         cart.delete()
-        return redirect(showcart) 
+        return redirect(show_cart)
     else:
-        return redirect(guesthome)        
-def usercart(request,id): 
-    if request.user.is_authenticated:
-            product =products.objects.get(id=id)
-            user = request.user
-            if Cart.objects.filter(product=product).exists():
-                cart =  Cart.objects.get(product=product)
-                if cart.quantity <= cart.product.Quantity:
-                    cart.quantity = cart.quantity+1
-                    cart.totalprice = cart.product.price * cart.quantity
-                    cart.save()   
-                    return redirect(userhome)
-                else:
-                    return redirect(guesthome)               
-            else:   
-                quantity = 1 
-                
-                cart =  Cart.objects.create(user=user,product=product,quantity = quantity)                   
-                return redirect(userhome) 
-    else:
-        return redirect(guesthome)      
+        return redirect(guest_home)
 
-def cartedit(request):
+
+def user_cart(request, id):
+    if request.user.is_authenticated:
+        product = products.objects.get(id=id)
+        user = request.user
+        if Cart.objects.filter(product=product,user=user).exists():
+            cart = Cart.objects.get(product=product,user=user)
+            if cart.quantity <= cart.product.Quantity:
+                cart.quantity = cart.quantity + 1
+                cart.totalprice = cart.product.price * cart.quantity
+                cart.save()
+                return redirect(user_home)
+            else:
+                return redirect(guest_home)
+        else:
+            quantity = 1
+
+            Cart.objects.create(user=user, product=product, quantity=quantity)
+            return redirect(user_home)
+    else:
+        return redirect(guest_home)
+
+
+def cart_edit(request):
     id = request.POST["id"]
-    count =1
-    grandtotal =0
-    carts = Cart.objects.filter(user=request.user)
+    count = 1
+    grandtotal = 0
+    cart = Cart.objects.filter(user=request.user)
     item = Cart.objects.get(id=id)
-    if request.POST["value"] == "add":       
+    if request.POST["value"] == "add":
         item.quantity = item.quantity + count
         item.save()
-        price = item.product.price * item.quantity 
+        price = item.product.price * item.quantity
 
-        for x in carts:
-            grandtotal = grandtotal + x.product.price * x.quantity
-    elif request.POST["value"]== "sub":
+        for item in cart:
+            grandtotal = grandtotal + item.product.price * item.quantity
+    elif request.POST["value"] == "sub":
         item.quantity = item.quantity - count
         item.save()
-        price = item.product.price * item.quantity 
+        price = item.product.price * item.quantity
 
-        for x in carts:
-            grandtotal = grandtotal + x.product.price * x.quantity
-    return JsonResponse({'total':price,'grandtotal':grandtotal}, safe=False)
+        for item in cart:
+            grandtotal = grandtotal + item.product.price * item.quantity
+    return JsonResponse({'total': price, 'grandtotal': grandtotal}, safe=False)
 
-def showaddress(request): 
+
+def show_address(request):
     if request.user.is_authenticated:
         user = request.user
-        cart = Cart.objects.filter(user= user)       
-        category= Category.objects.all()
+        cart = Cart.objects.filter(user=user)
+        category = Category.objects.all()
         item_count = cart.count()
-        address =Address.objects.filter(user=user)
-        return render(request,'userapp/user_address.html',{'category_data':category,'no':item_count,'address':address}) 
+        address = Address.objects.filter(user=user)
+        return render(request, 'userapp/user_address.html',
+                      {'category_data': category, 'no': item_count, 'address': address})
     else:
-        return redirect(guesthome)
+        return redirect(guest_home)
 
-def createaddress(request):
+
+def create_address(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
             user = request.user
@@ -324,17 +345,18 @@ def createaddress(request):
             city = request.POST['city']
             state = request.POST['state']
             pincode = request.POST['pincode']
-            address_details = Address.objects.create(user=user,name=name,email=email,address=address,city=city,state=state,pincode=pincode) 
-            return redirect(showaddress)
+            Address.objects.create(user=user, name=name, email=email, address=address, city=city,
+                                   state=state, pincode=pincode)
+            return redirect(show_address)
         else:
-            return render(request,'userapp/edit_address.html')   
+            return render(request, 'userapp/edit_address.html')
     else:
-        return redirect(guesthome)             
+        return redirect(guest_home)
 
 
-def editaddress(request,id):
+def edit_address(request, id):
     if request.user.is_authenticated:
-        address_details =Address.objects.get(id =id)
+        address_details = Address.objects.get(id=id)
         if request.method == 'POST':
             address_details.name = request.POST['firstname']
             address_details.email = request.POST['email']
@@ -343,33 +365,34 @@ def editaddress(request,id):
             address_details.state = request.POST['state']
             address_details.pincode = request.POST['pincode']
             address_details.save()
-            return redirect(showaddress)
+            return redirect(show_address)
         else:
             edit = 1
-            return render(request,'userapp/edit_address.html',{'address':address_details,'edit':edit})   
+            return render(request, 'userapp/edit_address.html', {'address': address_details, 'edit': edit})
     else:
-        return redirect(guesthome)         
+        return redirect(guest_home)
 
-def userorderhistory(request):
+
+def user_order_history(request):
     if request.user.is_authenticated:
         user = request.user
         order = Order.objects.filter(user=user)
-        category= Category.objects.all()
-        cart = Cart.objects.filter(user= user)
-        item_count = cart.count()        
-        return render(request,'userapp/user_order_history.html',{'items_data': order,'category_data':category,'no':item_count})
+        category = Category.objects.all()
+        cart = Cart.objects.filter(user=user)
+        item_count = cart.count()
+        return render(request, 'userapp/user_order_history.html',
+                      {'items_data': order, 'category_data': category, 'no': item_count})
 
-def userpayment(request,id):
+
+def user_payment(request, id):
     if request.user.is_authenticated:
-        print('Authentcated')
         if request.method == 'POST':
-            print('insidepost')
-            user = request.user 
+            user = request.user
             address = Address.objects.get(id=id)
             grandtotal = 0
             date = datetime.datetime.now()
             trans_id = datetime.datetime.now().timestamp()
-            mode =  request.POST['mode']
+            mode = request.POST['mode']
             address.name = request.POST['name']
             address.email = request.POST['email']
             address.addrees = request.POST['address']
@@ -377,67 +400,74 @@ def userpayment(request,id):
             address.state = request.POST['state']
             address.pincode = request.POST['pincode']
             address.save()
-            cart = Cart.objects.filter(user= user)
-            status= 'pending'
+            cart = Cart.objects.filter(user=user)
+            status = 'pending'
             for item in cart:
-                item.totalprice = item.quantity*item.product.price
+                item.totalprice = item.quantity * item.product.price
                 grandtotal = grandtotal + item.totalprice
-            
+
             for item in cart:
-                order_details = Order.objects.create(user=user, address=address, product=item.product, quantity=item.quantity, totalprice=item.product.price*item.quantity,tdate=date,tid=trans_id,payment_mode=mode,order_status = 'pending',payment_status=status)
+                Order.objects.create(user=user, address=address, product=item.product,
+                                     quantity=item.quantity,
+                                     totalprice=item.product.price * item.quantity, tdate=date,
+                                     tid=trans_id, payment_mode=mode, order_status='pending',
+                                     payment_status=status)
                 item.product.Quantity = item.product.Quantity - item.quantity
                 item.product.save()
             cart.delete()
             if mode == 'COD':
                 mode = 'COD'
-                messages.info(request,"Order placed Succesfully")
-                return JsonResponse({'mode':mode,'tid':trans_id},safe=False)    
+                messages.info(request, "Order placed Succesfully")
+                return JsonResponse({'mode': mode, 'tid': trans_id}, safe=False)
 
             elif mode == 'Paypal':
-                mode ='Paypal'
-                return JsonResponse({'mode':mode,'tid':trans_id},safe=False)    
+                mode = 'Paypal'
+                return JsonResponse({'mode': mode, 'tid': trans_id}, safe=False)
 
             elif mode == 'Razorpay':
-                order_amount = grandtotal*100
+                order_amount = grandtotal * 100
                 order_currency = 'INR'
-                client = razorpay.Client(auth = ('rzp_test_EJQneGlqu2SpAQ', 'oCisVDcytFHu60u7EGuzrinD'))
-                payment = client.order.create({'amount':order_amount, 'currency':order_currency, 'payment_capture': '1'})
+                client = razorpay.Client(auth=('rzp_test_EJQneGlqu2SpAQ', 'oCisVDcytFHu60u7EGuzrinD'))
+                client.order.create(
+                    {'amount': order_amount, 'currency': order_currency, 'payment_capture': '1'})
                 mode = 'Razorpay'
-                return JsonResponse({'mode':mode,'tid':trans_id},safe=False)    
-        else:   
-            user = request.user 
-            address = Address.objects.filter(id=id)        
-            cart = Cart.objects.filter(user= user)
+                return JsonResponse({'mode': mode, 'tid': trans_id}, safe=False)
+        else:
+            user = request.user
+            address = Address.objects.filter(id=id)
+            cart = Cart.objects.filter(user=user)
             item_count = cart.count()
             grandtotal = 0
             for item in cart:
-                item.totalprice = item.quantity*item.product.price
+                item.totalprice = item.quantity * item.product.price
                 grandtotal = grandtotal + item.totalprice
-            razorpay_total = grandtotal*100
-            return render(request,'userapp/user_payment.html',{'cart_data': cart,'no':item_count,'grandtotal':grandtotal,'address':address,'razorpay_total':razorpay_total})     
+            razorpay_total = grandtotal * 100
+            return render(request, 'userapp/user_payment.html',
+                          {'cart_data': cart, 'no': item_count, 'grandtotal': grandtotal, 'address': address,
+                           'razorpay_total': razorpay_total})
     else:
-        return redirect(guesthome)
+        return redirect(guest_home)
 
-def payplpayment(request):
-    tid = request.POST['tid']
-    orders = Order.objects.filter(tid=tid)
+
+def paypl_payment(request):
+    transaction_id = request.POST['tid']
+    orders = Order.objects.filter(tid=transaction_id)
     for order in orders:
-        order.payment_status ='SUCCESS'
+        order.payment_status = 'SUCCESS'
         order.save()
-    return JsonResponse('success',safe=False)  
+    return JsonResponse('success', safe=False)
 
-def razorpaypayment(request):
-    tid = request.POST['tid']
-    orders = Order.objects.filter(tid=tid)
+
+def razorpay_payment(request):
+    transaction_id = request.POST['tid']
+    orders = Order.objects.filter(tid=transaction_id)
     for order in orders:
-        order.payment_status ='SUCCESS'
+        order.payment_status = 'SUCCESS'
         order.save()
-    return JsonResponse('success',safe=False)      
+    return JsonResponse('success', safe=False)
 
-def userlogout(request):
-     if request.user.is_authenticated:
+
+def user_logout(request):
+    if request.user.is_authenticated:
         auth.logout(request)
-        return redirect(usersignin)             
-
-
-   
+        return redirect(user_signin)
