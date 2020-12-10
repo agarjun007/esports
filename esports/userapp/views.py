@@ -34,7 +34,6 @@ def user_signup(request):
                 user = User.objects.create_user(first_name=name, username=username, email=email, password=password1,
                                                 last_name=mobile, is_active=True)
                 user.save();
-            messages.info(request, "User created successfully..")
             return JsonResponse('valid', safe=False)
         else:
             return JsonResponse('invalid', safe=False)

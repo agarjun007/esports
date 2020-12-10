@@ -20,11 +20,11 @@ class Userprofile(models.Model):
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=20)
-    email = models.CharField(max_length=20)
-    address = models.TextField(max_length=100)
+    name = models.CharField(max_length=50)
+    email = models.CharField(max_length=100)
+    address = models.TextField(max_length=500)
     city = models.CharField(max_length=50)
-    state = models.CharField(max_length=20)
+    state = models.CharField(max_length=50)
     pincode = models.IntegerField()
 
 
