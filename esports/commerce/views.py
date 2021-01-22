@@ -133,6 +133,7 @@ def create_products(request):
             image_data = request.POST['pro_img']
             format, imgstr = image_data.split(';base64,')
             ext = format.split('/')[-1]
+            print('formatttttt',ext)
 
             img_decoded = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
             product = products.objects.create(category=category_data, productname=product_name,
