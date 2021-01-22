@@ -364,6 +364,7 @@ def edit_address(request, id):
             address_details.state = request.POST['state']
             address_details.pincode = request.POST['pincode']
             address_details.save()
+            print(address_details.email)
             return redirect(show_address)
         else:
             edit = 1
