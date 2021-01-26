@@ -60,11 +60,11 @@ def admin_panel_user(request):
 
 def admin_panel_category(request):
     if request.session.has_key('password'):
-        category = Category.objects.all()
-        for category in category:
+        categories = Category.objects.all()
+        for category in categories:
             total_items = products.objects.filter(category=category)
             category.productcount = total_items.count()
-        return render(request, 'commerce/adminpanel_category.html', {'table_data': category})
+        return render(request, 'commerce/adminpanel_category.html', {'table_data': categories})
     else:
         return redirect(admin_login)
 
