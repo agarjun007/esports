@@ -222,13 +222,19 @@
           type: "POST",
           data : data,
           dataType : "json",
-          success: function( data ){  
+          success: function( data ){
+            if (data.status == 1)  {
             let  total = parseInt(data.total) 
             let grandtotal = parseInt(data.grandtotal)
             console.log(total)
             $('#output'+plusid).html(total)
             $('#subtotal').html(grandtotal)
             $('#grandtotal').html(grandtotal)
+            }
+            else{
+              $('#qty'+plusid).val(quantity-1)
+              alert('selected quantity is not available for this product ')
+            }
 
           }
       });

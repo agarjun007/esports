@@ -77,17 +77,25 @@ WSGI_APPLICATION = 'esports.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+#postgres
+# DATABASES = {
+#      'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'esports',
+#         'USER' : 'postgres',
+#         'PASSWORD': 'password',
+#         'HOST' : 'localhost',
+#     }
+# }
 
+#sqlite3
 DATABASES = {
-     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'esports',
-        'USER' : 'postgres',
-        'PASSWORD': 'password',
-        'HOST' : 'localhost',
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

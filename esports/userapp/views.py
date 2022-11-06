@@ -282,12 +282,13 @@ def user_cart(request, id):
         user = request.user
         if Cart.objects.filter(product=product,user=user).exists():
             cart = Cart.objects.get(product=product,user=user)
-            if cart.quantity <= cart.product.Quantity:
+            if cart.quantity + 1 <= cart.product.Quantity:
                 cart.quantity = cart.quantity + 1
                 cart.totalprice = cart.product.price * cart.quantity
                 cart.save()
                 return redirect(user_home)
             else:
+                messages.error(request,'selected quantity is not available for this product')
                 return redirect(guest_home)
         else:
             quantity = 1
@@ -305,6 +306,8 @@ def cart_edit(request):
     cart = Cart.objects.filter(user=request.user)
     item = Cart.objects.get(id=id)
     if request.POST["value"] == "add":
+        if item.product.Quantity < item.quantity + count:
+            return JsonResponse({'total': None, 'grandtotal': None, 'status':0}, safe=False)
         item.quantity = item.quantity + count
         item.save()
         price = item.product.price * item.quantity
@@ -318,7 +321,7 @@ def cart_edit(request):
 
         for item in cart:
             grandtotal = grandtotal + item.product.price * item.quantity
-    return JsonResponse({'total': price, 'grandtotal': grandtotal}, safe=False)
+    return JsonResponse({'total': price, 'grandtotal': grandtotal,'status':1}, safe=False)
 
 
 def show_address(request):
